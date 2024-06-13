@@ -1,0 +1,40 @@
+{
+	"name": "markdown-media-card",
+	"version": "1.2.0",
+	"description": "This is a plugin for Obsidian that allows you to insert media information cards in Markdown, such as books, music, movies, etc.",
+	"main": "main.js",
+	"scripts": {
+		"dev": "node esbuild.config.mjs",
+		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
+		"version": "node version-bump.mjs && git add manifest.json versions.json",
+		"typesafe-i18n": "typesafe-i18n"
+	},
+	"keywords": [
+		"obsidian",
+		"plugin",
+		"markdown"
+	],
+	"author": "Zhou Hua",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/zhouhua/obsidian-markdown-media-card"
+	},
+	"bugs": {
+		"url": "https://github.com/zhouhua/obsidian-markdown-media-card/issues"
+	},
+	"license": "MIT",
+	"devDependencies": {
+		"@types/node": "^20.11.28",
+		"@typescript-eslint/eslint-plugin": "7.2.0",
+		"@typescript-eslint/parser": "7.2.0",
+		"builtin-modules": "3.3.0",
+		"esbuild": "0.20.2",
+		"obsidian": "latest",
+		"tslib": "2.6.2",
+		"typescript": "5.4.2"
+	},
+	"dependencies": {
+		"@zhouhua-dev/remark-media-card": "^1.1.6",
+		"typesafe-i18n": "^5.26.2"
+	}
+}

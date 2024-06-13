@@ -1,0 +1,12 @@
+.markdown-media-card-render .error-msg {
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	color: var(--color-orange);
+}
+.markdown-media-card-render .copy {
+	opacity: 0;
+}
+.markdown-media-card-render .language-yaml {
+	padding-left: 2em;
+}
