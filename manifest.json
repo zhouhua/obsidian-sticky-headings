@@ -3,7 +3,7 @@
 	"name": "Sticky Headings",
 	"version": "1.2.0",
 	"minAppVersion": "0.15.0",
-	"description": "display headings tree during editing and preview to indicate the current position.",
+	"description": "Display headings tree during editing and preview to indicate the current position.",
 	"author": "Zhou Hua",
 	"authorUrl": "https://zhouhua.site",
 	"isDesktopOnly": false

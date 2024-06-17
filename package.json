@@ -1,7 +1,7 @@
 {
 	"name": "markdown-sticky-headings",
 	"version": "1.0.0",
-	"description": "display headings tree during editing and preview to indicate the current position.",
+	"description": "Display headings tree during editing and preview to indicate the current position.",
 	"main": "main.js",
 	"scripts": {
 		"dev": "node esbuild.config.mjs",
