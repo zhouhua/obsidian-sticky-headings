@@ -1,9 +1,9 @@
 {
-	"id": "markdown-media-card",
-	"name": "Markdown Media Card",
+	"id": "sticky-headings",
+	"name": "Sticky Headings",
 	"version": "1.2.0",
 	"minAppVersion": "0.15.0",
-	"description": "Insert media information cards in Markdown, such as books, music, movies, etc.",
+	"description": "display headings tree during editing and preview to indicate the current position.",
 	"author": "Zhou Hua",
 	"authorUrl": "https://zhouhua.site",
 	"isDesktopOnly": false

@@ -1,7 +1,7 @@
 {
-	"name": "markdown-media-card",
-	"version": "1.2.0",
-	"description": "This is a plugin for Obsidian that allows you to insert media information cards in Markdown, such as books, music, movies, etc.",
+	"name": "markdown-sticky-headings",
+	"version": "1.0.0",
+	"description": "display headings tree during editing and preview to indicate the current position.",
 	"main": "main.js",
 	"scripts": {
 		"dev": "node esbuild.config.mjs",
@@ -17,24 +17,25 @@
 	"author": "Zhou Hua",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/zhouhua/obsidian-markdown-media-card"
+		"url": "https://github.com/zhouhua/obsidian-sticky-headings"
 	},
 	"bugs": {
-		"url": "https://github.com/zhouhua/obsidian-markdown-media-card/issues"
+		"url": "https://github.com/zhouhua/obsidian-sticky-headings/issues"
 	},
 	"license": "MIT",
 	"devDependencies": {
-		"@types/node": "^20.11.28",
-		"@typescript-eslint/eslint-plugin": "7.2.0",
-		"@typescript-eslint/parser": "7.2.0",
+		"@types/lodash": "^4.17.5",
+		"@types/node": "^20.14.2",
+		"@typescript-eslint/eslint-plugin": "7.13.0",
+		"@typescript-eslint/parser": "7.13.0",
 		"builtin-modules": "3.3.0",
-		"esbuild": "0.20.2",
+		"esbuild": "0.21.5",
 		"obsidian": "latest",
-		"tslib": "2.6.2",
-		"typescript": "5.4.2"
+		"tslib": "2.6.3",
+		"typescript": "5.4.5"
 	},
 	"dependencies": {
-		"@zhouhua-dev/remark-media-card": "^1.1.6",
+		"lodash": "^4.17.21",
 		"typesafe-i18n": "^5.26.2"
 	}
 }

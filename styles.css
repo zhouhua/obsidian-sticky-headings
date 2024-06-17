@@ -1,12 +1,37 @@
-.markdown-media-card-render .error-msg {
-	position: absolute;
-	right: 0;
-	bottom: 0;
-	color: var(--color-orange);
+.sticky-headings-container {
+	font-size: 12px;
+	max-width: var(--file-line-width);
+	margin: 0 auto;
+	padding-left: 32px;
+	padding-bottom: 10px;
 }
-.markdown-media-card-render .copy {
-	opacity: 0;
+.sticky-headings-item {
+	line-height: 18px;
+	display: flex;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	height: 18px;
+	cursor: var(--cursor-link);
 }
-.markdown-media-card-render .language-yaml {
+.sticky-headings-item svg {
+	width: 16px;
+	height: 16px;
+	margin-right: 8px;
+	color: var(--link-color);
+}
+.sticky-headings-level-2 {
+	padding-left: 1em;
+}
+.sticky-headings-level-3 {
 	padding-left: 2em;
+}
+.sticky-headings-level-4 {
+	padding-left: 3em;
+}
+.sticky-headings-level-5 {
+	padding-left: 4em;
+}
+.sticky-headings-level-6 {
+	padding-left: 5em;
 }
