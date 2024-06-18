@@ -1,7 +1,10 @@
 import { App, HeadingCache, TAbstractFile, TFile } from "obsidian";
 
 export function isMarkdownFile(file: TFile | TAbstractFile) {
-	return ["md", "markdown"].includes((file as TFile)?.extension ?? "");
+	if (!(file instanceof TFile)) {
+		return false;
+	}
+	return ["md", "markdown"].includes(file.extension ?? "");
 }
 
 export function getHeadings(file: TFile, app: App) {

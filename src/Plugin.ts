@@ -62,7 +62,7 @@ export default class StickyHaeddingsPlugin extends Plugin {
 		);
 		this.registerEvent(
 			this.app.metadataCache.on("resolve", (file) => {
-				if (isMarkdownFile(file as TFile)) {
+				if (isMarkdownFile(file)) {
 					this.checkFileResolveMap();
 					const ids: string[] = [];
 					Object.keys(this.fileResolveMap).forEach((id) => {
