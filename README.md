@@ -1,7 +1,7 @@
 # Obsidian Sticky Headings
 
 > [!NOTE]
-> 
+>
 > It wasn't until I was about to release this plugin that I discovered there's already a plugin with similar functionality in the Obsidian Plugin Market: [Obsidian Sticky Heading](https://github.com/imshenshen/obsidian-sticky-heading). I mean no offense and have no intention of duplicating work. It seems that we just happened to have the same idea and wanted to solve the same problem. The truth is, after seeing the Sticky Scroll feature in the VS Code editor, I found it incredibly useful. For the past six months, I’ve been wanting to bring this feature to the Obsidian world.
 >
 > In terms of implementation, these two plugins are entirely different (there's no possibility of plagiarism), and each has its unique features. Obsidian users can choose whichever suits them better. Additionally, I have a few small suggestions:
