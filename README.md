@@ -11,10 +11,36 @@
 
 ## Overview
 
-The Sticky Headings plugin for Obsidian enhances your writing and reading experience by keeping the current content's heading levels displayed, providing better orientation and progress tracking. By clicking on the displayed headings, you can quickly scroll to the corresponding section in your document.
+The Sticky Headings plugin for Obsidian enhances your writing and reading experience by keeping the current content's heading levels displayed, providing better orientation and progress tracking. By clicking on the displayed headings, you can quickly scroll to the corresponding section in your note.
 
 ## Installation
 
 1. Install the `Another Sticky Headings` plugin via the Obsidian Community Plugins marketplace.
 2. Enable the plugin via the Obsidian Settings under the "Community Plugins" section.
 3. Configure the plugin parameters as needed through the settings UI.
+
+## Features
+
+### Default Mode
+
+![Default Mode](./screenshots/defaultMode.gif)
+
+In default mode, the heading of the current content, the ancestor headings of the current heading, and the sibling headings (that appeared previously) of these headings will all be displayed. The benefit of this approach is that it allows us to better understand what content has already been covered while editing or reading the note.
+
+### Concise Mode
+
+![Concise Mode](./screenshots/conciseMode.gif)
+
+In concise mode, only the heading of the current content and the ancestor headings of the current heading will be displayed, resulting in a more streamlined presentation. The benefit of this approach is that it allows us to quickly understand the position of the current content within the overall note, enabling us to focus more on the task at hand.
+
+### Quick Jump
+
+![Quick Jump](./screenshots/quickJump.gif)
+
+The headings that are fixed at the top of the note are all clickable. By clicking on them, you can quickly scroll the note to the corresponding section.
+
+### More
+
+![More](./screenshots/more.gif)
+
+Supports both editing and reading modes, as well as multi-column layouts.

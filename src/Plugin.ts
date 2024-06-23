@@ -49,6 +49,20 @@ export default class StickyHaeddingsPlugin extends Plugin {
       }),
     );
     this.registerEvent(
+      this.app.workspace.on('layout-change', () => {
+        this.checkFileResolveMap();
+        this.updateHeadings(Object.keys(this.fileResolveMap));
+      })
+    );
+    this.registerEvent(
+      this.app.workspace.on('active-leaf-change', (leaf) => {
+        if(leaf?.id && (leaf?.view instanceof MarkdownView)) {
+          this.checkFileResolveMap();
+          this.updateHeadings([leaf.id]);
+        }
+      })
+    );
+    this.registerEvent(
       this.app.workspace.on('editor-change', (editor, info) => {
         const file = info.file;
         if (file && isMarkdownFile(file)) {
@@ -63,7 +77,6 @@ export default class StickyHaeddingsPlugin extends Plugin {
     this.registerEvent(
       this.app.metadataCache.on('resolve', (file) => {
         if (isMarkdownFile(file)) {
-          this.checkFileResolveMap();
           const ids: string[] = [];
           Object.keys(this.fileResolveMap).forEach((id) => {
             const item = this.fileResolveMap[id];
@@ -72,7 +85,10 @@ export default class StickyHaeddingsPlugin extends Plugin {
               ids.push(id);
             }
           });
-          this.updateHeadings(ids);
+          if(ids.length > 0) {
+            this.checkFileResolveMap();
+            this.updateHeadings(ids);
+          }
         }
       }),
     );
@@ -85,7 +101,22 @@ export default class StickyHaeddingsPlugin extends Plugin {
     this.app.workspace.iterateLeaves(
       this.app.workspace.getFocusedContainer(),
       (leaf) => {
-        leaf.id && validIds.push(leaf.id);
+        if(leaf.id) {
+          validIds.push(leaf.id);
+          if (!(leaf.id in this.fileResolveMap)) {
+            if(leaf.view instanceof MarkdownView) {
+              const file = leaf.view.getFile();
+              if(file) {
+                this.fileResolveMap[leaf.id] = {
+                  resolve: true,
+                  file,
+                  container: leaf.view.contentEl,
+                  view: leaf.view,
+                };
+              }
+            }
+          }
+        }
       },
     );
     Object.keys(this.fileResolveMap).forEach((id) => {
