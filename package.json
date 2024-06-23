@@ -1,6 +1,6 @@
 {
 	"name": "obsidian-sticky-headings",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"description": "Display headings tree during editing and preview to indicate the current position.",
 	"main": "main.js",
 	"scripts": {
