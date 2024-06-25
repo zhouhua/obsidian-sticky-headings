@@ -2,7 +2,7 @@
 	"id": "another-sticky-headings",
 	"name": "Another Sticky Headings",
 	"version": "1.0.2",
-	"minAppVersion": "1.15.3",
+	"minAppVersion": "1.5.3",
 	"description": "Display headings tree during editing and preview to indicate the current position.",
 	"author": "Zhou Hua",
 	"authorUrl": "https://zhouhua.site",
