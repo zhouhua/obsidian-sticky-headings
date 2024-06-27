@@ -44,3 +44,11 @@ The headings that are fixed at the top of the note are all clickable. By clickin
 ![More](./screenshots/more.gif)
 
 Supports both editing and reading modes, as well as multi-column layouts.
+
+## My Other Obsidian Plugins
+
+* [Export Image](https://github.com/zhouhua/obsidian-export-image)
+* [Markdown Media Card](https://github.com/zhouhua/obsidian-markdown-media-card)
+* [vConsole](https://github.com/zhouhua/obsidian-vconsole)
+* [POWER MODE](https://github.com/zhouhua/obsidian-power-mode)
+* [PopKit](https://github.com/zhouhua/obsidian-popkit)
