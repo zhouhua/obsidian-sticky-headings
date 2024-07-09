@@ -1,4 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+
 import { readFileSync, writeFileSync } from 'fs';
+import process from 'process';
 
 const targetVersion = process.env.npm_package_version;
 

@@ -20,6 +20,7 @@
     ]
   },
   "include": [
-    "**/*.ts"
-  ]
+    "**/*.ts",
+    "*.mjs"
+, "eslint.config.js"  ]
 }

@@ -1,9 +1,20 @@
+.view-content {
+  position: relative;
+}
+.sticky-headings-root {
+  height: fit-content;
+  /* transition: height 0.05s linear; */
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  z-index: 1;
+}
 .sticky-headings-container {
 	font-size: 12px;
 	max-width: var(--file-line-width);
 	margin: 0 auto;
 	padding-left: 32px;
-	padding-bottom: 10px;
 }
 .sticky-headings-item {
 	line-height: 18px;
@@ -13,6 +24,10 @@
 	white-space: nowrap;
 	height: 18px;
 	cursor: var(--cursor-link);
+}
+.sticky-headings-item:last-of-type {
+	padding-bottom: 10px;
+  height: 28px;
 }
 .sticky-headings-item svg {
 	width: 16px;

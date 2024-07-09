@@ -4,12 +4,20 @@ import { loadAllLocales } from '../i18n/i18n-util.sync';
 
 loadAllLocales();
 
+declare global {
+  interface Window {
+    i18next: {
+      language: string;
+    };
+  }
+}
+
 let locale: Locales = 'en';
 try {
-	// @ts-ignore
-	locale = /^zh/.test(global?.i18next?.language || '') ? 'zh' : 'en';
-} catch (e) {
-	/* empty */
+  locale = (window.i18next.language || '').startsWith('zh') ? 'zh' : 'en';
+}
+catch (e) {
+  /* empty */
 }
 
 const L = i18n()[locale];
