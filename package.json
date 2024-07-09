@@ -1,6 +1,6 @@
 {
 	"name": "obsidian-sticky-headings",
-	"version": "1.0.3",
+	"version": "1.0.4",
 	"description": "Display headings tree during editing and preview to indicate the current position.",
 	"main": "main.js",
 	"scripts": {
@@ -8,7 +8,7 @@
 		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
 		"version": "node version-bump.mjs && git add manifest.json versions.json",
 		"typesafe-i18n": "typesafe-i18n",
-    "lint": "eslint ./"
+		"lint": "eslint ./"
 	},
 	"keywords": [
 		"obsidian",
