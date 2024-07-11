@@ -209,7 +209,13 @@ export default class StickyHaeddingsPlugin extends Plugin {
       headingItem.prepend(icon);
       headingContainer.append(headingItem);
       headingItem.addEventListener('click', () => {
-        view.setEphemeralState({ line: heading.position.start.line });
+        // @ts-expect-error typing error
+        view.currentMode.applyScroll(heading.position.start.line, { highlight: true });
+        setTimeout(() => {
+          // wait for headings tree rendered
+          // @ts-expect-error typing error
+          view.currentMode.applyScroll(heading.position.start.line, { highlight: true });
+        }, 20);
       });
     });
     const newHeight = headingContainer.scrollHeight;
@@ -219,11 +225,8 @@ export default class StickyHaeddingsPlugin extends Plugin {
       const contentElement = container.querySelectorAll<HTMLElement>('.markdown-source-view, .markdown-reading-view');
       contentElement.forEach(item => {
         const scroller = item.querySelector('.cm-scroller, .markdown-preview-view');
-        const before = (scroller?.scrollTop || 0) - this.fileResolveMap[id].lastHeight;
         item.style.paddingTop = newHeight + 'px';
         scroller?.scrollTo({ top: scroller.scrollTop + offset, behavior: 'instant' });
-        const after = (scroller?.scrollTop || 0) - newHeight;
-        scroller && before !== after && console.log(scroller, before, after);
       });
       this.fileResolveMap[id].lastHeight = newHeight;
     }
