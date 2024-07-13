@@ -1,5 +1,20 @@
+/* @settings
+
+name: Sticky Headings
+id: sticky-headings
+settings:
+    - 
+        id: indent-width
+        title: Indent width
+        description: The indentation width in em units
+        type: variable-number
+        default: 1
+        format: rem
+
+*/
+
 :root {
-	--indent-size: 1em;
+	--indent-width: 1em;
 }
 
 .view-content {
@@ -13,14 +28,15 @@
 	position: absolute;
 	top: 0;
 	width: 100%;
+	padding: 0 var(--file-margins);
 	z-index: 1;
 }
 
 .sticky-headings-container {
 	font-size: 12px;
 	margin: 0 auto;
-	padding: 0 var(--file-margins);
 	background-color: var(--background-primary);
+	max-width: var(--file-line-width);
 }
 
 .sticky-headings-item {
@@ -40,24 +56,24 @@
 	color: var(--link-color);
 }
 
-.sticky-headings-item:nth-of-type(2) {
-	padding-left: var(--indent-size);
+.sticky-headings-item.sticky-headings-level-2 {
+	padding-left: var(--indent-width);
 }
 
-.sticky-headings-item:nth-of-type(3) {
-	padding-left: calc(var(--indent-size) * 2);
+.sticky-headings-item.sticky-headings-level-3 {
+	padding-left: calc(var(--indent-width) * 2);
 }
 
-.sticky-headings-item:nth-of-type(4) {
-	padding-left: calc(var(--indent-size) * 3);
+.sticky-headings-item.sticky-headings-level-4 {
+	padding-left: calc(var(--indent-width) * 3);
 }
 
-.sticky-headings-item:nth-of-type(5) {
-	padding-left: calc(var(--indent-size) * 4);
+.sticky-headings-item.sticky-headings-level-5 {
+	padding-left: calc(var(--indent-width) * 4);
 }
 
-.sticky-headings-item:nth-of-type(6) {
-	padding-left: calc(var(--indent-size) * 5);
+.sticky-headings-item.sticky-headings-level-6 {
+	padding-left: calc(var(--indent-width) * 5);
 }
 
 .sticky-headings-item:last-of-type {
