@@ -219,8 +219,7 @@ export default class StickyHaeddingsPlugin extends Plugin {
       } else {
           headingContainer.append(headingItem)
       }
-      headingContainer.append(headingItem);
-      headingItem.addEventListener('click', () => {
+      headingItem.addEventListener('click', () => { 
         // @ts-expect-error typing error
         view.currentMode.applyScroll(heading.position.start.line, { highlight: true });
         setTimeout(() => {
