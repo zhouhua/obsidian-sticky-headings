@@ -3,7 +3,7 @@
 name: Sticky Headings
 id: sticky-headings
 settings:
-    - 
+    -
         id: indent-width
         title: Indent width
         description: The indentation width in em units
@@ -56,23 +56,23 @@ settings:
 	color: var(--link-color);
 }
 
-.sticky-headings-item.sticky-headings-level-2 {
+.sticky-headings-item[data-indent-level="2"] {
 	padding-left: var(--indent-width);
 }
 
-.sticky-headings-item.sticky-headings-level-3 {
+.sticky-headings-item[data-indent-level="3"] {
 	padding-left: calc(var(--indent-width) * 2);
 }
 
-.sticky-headings-item.sticky-headings-level-4 {
+.sticky-headings-item[data-indent-level="4"] {
 	padding-left: calc(var(--indent-width) * 3);
 }
 
-.sticky-headings-item.sticky-headings-level-5 {
+.sticky-headings-item[data-indent-level="5"] {
 	padding-left: calc(var(--indent-width) * 4);
 }
 
-.sticky-headings-item.sticky-headings-level-6 {
+.sticky-headings-item[data-indent-level="6"] {
 	padding-left: calc(var(--indent-width) * 5);
 }
 
