@@ -13,7 +13,7 @@ import {
 } from 'obsidian';
 import defaultSetting from './defaultSetting';
 import L from './L';
-import { getHeadings, isMarkdownFile, trivial } from './utils';
+import { calcIndentLevels, getHeadings, isMarkdownFile, trivial } from './utils';
 
 export default class StickyHaeddingsPlugin extends Plugin {
   settings: ISetting;
@@ -199,7 +199,8 @@ export default class StickyHaeddingsPlugin extends Plugin {
     if (this.settings.max) {
       finalHeadings = finalHeadings.slice(-this.settings.max);
     }
-    finalHeadings.forEach(heading => {
+    const indentLevels: number[] = calcIndentLevels(finalHeadings);
+    finalHeadings.forEach((heading, i) => {
       const headingItem = createDiv({
         cls: `sticky-headings-item sticky-headings-level-${heading.level}`,
         text: heading.heading,
@@ -207,6 +208,7 @@ export default class StickyHaeddingsPlugin extends Plugin {
       const icon = createDiv({ cls: 'sticky-headings-icon' });
       setIcon(icon, `heading-${heading.level}`);
       headingItem.prepend(icon);
+      headingItem.setAttribute('data-indent-level', `${indentLevels[i]}`);
       headingContainer.append(headingItem);
       headingItem.addEventListener('click', () => {
         // @ts-expect-error typing error

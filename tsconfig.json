@@ -12,6 +12,7 @@
     "isolatedModules": true,
 		"strictNullChecks": true,
 		"allowSyntheticDefaultImports": true,
+    "outDir": "dist",
     "lib": [
       "DOM",
       "ES5",
@@ -21,6 +22,7 @@
   },
   "include": [
     "**/*.ts",
-    "*.mjs"
-, "eslint.config.js"  ]
+    "*.mjs",
+    "eslint.config.js"
+  ]
 }
