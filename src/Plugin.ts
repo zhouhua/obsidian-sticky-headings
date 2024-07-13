@@ -160,6 +160,10 @@ export default class StickyHaeddingsPlugin extends Plugin {
     };
   }
 
+  rerenderAll() {
+    this.updateHeadings(Object.keys(this.fileResolveMap));
+  }
+
   updateHeadings(ids: string[]) {
     ids.forEach(id => {
       const item = this.fileResolveMap[id];
@@ -258,6 +262,7 @@ class StickyHeadingsSetting extends PluginSettingTab {
   update(data: ISetting) {
     this.plugin.settings = data;
     this.plugin.saveSettings();
+    this.plugin.rerenderAll();
   }
 
   display(): void {
