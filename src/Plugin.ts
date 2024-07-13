@@ -13,7 +13,7 @@ import {
 } from 'obsidian';
 import defaultSetting from './defaultSetting';
 import L from './L';
-import { getHeadings, isMarkdownFile, trivial } from './utils';
+import { calcIndentLevels, getHeadings, isMarkdownFile, trivial } from './utils';
 
 export default class StickyHaeddingsPlugin extends Plugin {
   settings: ISetting;
@@ -160,6 +160,10 @@ export default class StickyHaeddingsPlugin extends Plugin {
     };
   }
 
+  rerenderAll() {
+    this.updateHeadings(Object.keys(this.fileResolveMap));
+  }
+
   updateHeadings(ids: string[]) {
     ids.forEach(id => {
       const item = this.fileResolveMap[id];
@@ -199,20 +203,22 @@ export default class StickyHaeddingsPlugin extends Plugin {
     if (this.settings.max) {
       finalHeadings = finalHeadings.slice(-this.settings.max);
     }
-    finalHeadings.forEach(heading => {
+    const indentLevels: number[] = calcIndentLevels(finalHeadings);
+    finalHeadings.forEach((heading, i) => {
       let cls = `sticky-headings-item sticky-headings-level-${heading.level}`
       const headingItem = createDiv({
           cls,
           text: heading.heading
       })
+      headingItem.setAttribute('data-indent-level', `${indentLevels[i]}`);
       if (this.settings.indicators) {
           const icon = createDiv({ cls: 'sticky-headings-icon' })
           setIcon(icon, `heading-${heading.level}`)
           headingItem.prepend(icon)
-      }
-      if (this.settings.style === 'default') {
+        }
+        if (this.settings.style === 'default') {
           const wrapper = createDiv({
-              cls: `HyperMD-header HyperMD-header-${heading.level}`
+            cls: `HyperMD-header HyperMD-header-${heading.level}`
           })
           wrapper.append(headingItem)
           headingContainer.append(wrapper)
@@ -267,6 +273,7 @@ class StickyHeadingsSetting extends PluginSettingTab {
   update(data: ISetting) {
     this.plugin.settings = data;
     this.plugin.saveSettings();
+    this.plugin.rerenderAll();
   }
 
   display(): void {
