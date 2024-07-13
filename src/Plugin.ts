@@ -219,7 +219,6 @@ export default class StickyHaeddingsPlugin extends Plugin {
       } else {
           headingContainer.append(headingItem)
       }
-      headingItem.prepend(icon);
       headingContainer.append(headingItem);
       headingItem.addEventListener('click', () => {
         // @ts-expect-error typing error
