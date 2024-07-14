@@ -23,7 +23,6 @@ settings:
 
 .sticky-headings-root {
 	height: fit-content;
-	/* transition: height 0.05s linear; */
 	overflow: hidden;
 	position: absolute;
 	top: 0;
@@ -35,7 +34,6 @@ settings:
 .sticky-headings-container {
 	font-size: 12px;
 	margin: 0 auto;
-	background-color: var(--background-primary);
 	max-width: var(--file-line-width);
 }
 
