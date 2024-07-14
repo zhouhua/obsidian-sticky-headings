@@ -75,7 +75,7 @@ export function calcIndentLevels(headings: HeadingCache[]): number[] {
     }
     const parentIndex = findLastFromindex(list, i - 1, item => item.level < heading.level);
     if (parentIndex === -1) {
-      result.push(0);
+      result.push(1);
     }
     else {
       result.push(result[parentIndex + topLevelIndex] + 1);
