@@ -205,9 +205,13 @@ export default class StickyHaeddingsPlugin extends Plugin {
     }
     const indentLevels: number[] = calcIndentLevels(finalHeadings);
     finalHeadings.forEach((heading, i) => {
+      let cls = `sticky-headings-item sticky-headings-level-${heading.level}`
+      let text = heading.heading
+      let hasBrackets = /\[\[|\]\]/.test(text);
+      if(hasBrackets) text = text.replace(/\[\[|\]\]/g, '');
       const headingItem = createDiv({
-        cls: `sticky-headings-item sticky-headings-level-${heading.level}`,
-        text: heading.heading,
+        cls,
+        text,
       });
       const icon = createDiv({ cls: 'sticky-headings-icon' });
       setIcon(icon, `heading-${heading.level}`);
