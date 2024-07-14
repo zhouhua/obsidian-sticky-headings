@@ -70,7 +70,7 @@ export function calcIndentLevels(headings: HeadingCache[]): number[] {
   result.push(...calcIndentLevels(headings.slice(0, topLevelIndex)).map(level => level + 1));
   headings.slice(topLevelIndex).forEach((heading, i, list) => {
     if (i === 0) {
-      result.push(1);
+      result.push(0);
       return;
     }
     const parentIndex = findLastFromindex(list, i - 1, item => item.level < heading.level);
