@@ -226,16 +226,14 @@ export default class StickyHaeddingsPlugin extends Plugin {
     });
     const newHeight = headingContainer.scrollHeight;
     const offset = newHeight - this.fileResolveMap[id].lastHeight;
-    if (offset !== 0) {
-      headingContainer.parentElement!.style.height = newHeight + 'px';
-      const contentElement = container.querySelectorAll<HTMLElement>('.markdown-source-view, .markdown-reading-view');
-      contentElement.forEach(item => {
-        const scroller = item.querySelector('.cm-scroller, .markdown-preview-view');
-        item.style.paddingTop = newHeight + 'px';
-        scroller?.scrollTo({ top: scroller.scrollTop + offset, behavior: 'instant' });
-      });
-      this.fileResolveMap[id].lastHeight = newHeight;
-    }
+    headingContainer.parentElement!.style.height = newHeight + 'px';
+    const contentElement = container.querySelectorAll<HTMLElement>('.markdown-source-view, .markdown-reading-view');
+    contentElement.forEach(item => {
+      const scroller = item.querySelector('.cm-scroller, .markdown-preview-view');
+      item.style.paddingTop = newHeight + 'px';
+      scroller?.scrollTo({ top: scroller.scrollTop + offset, behavior: 'instant' });
+    });
+    this.fileResolveMap[id].lastHeight = newHeight;
   }
 
   onunload() {}
