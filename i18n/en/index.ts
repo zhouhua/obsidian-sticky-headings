@@ -12,6 +12,17 @@ const en: BaseTranslation = {
       title: 'Display quantity limit',
       description: 'Maximum number of headings that can be displayed. 0 indicates no limit.',
     },
+    indicators: {
+      title: 'Display heading indicators',
+      description: 'Toggle to display heading level indicators'
+    },
+    style: {
+        title: 'Style',
+        description:
+            'Use a simple heading style, or copy in file heading styles',
+        simple: 'Simple',
+        default: 'Default'
+    }
   },
 };
 

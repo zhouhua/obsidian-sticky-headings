@@ -43,6 +43,34 @@ type RootTranslation = {
 			 */
 			description: string
 		}
+        indicators: {
+            /**
+             * Display heading indicators
+             */
+            title: string
+            /**
+             * Maximum number of headings that can be displayed. 0 indicates no limit.
+             */
+            description: string
+        }
+        style: {
+            /**
+             * Display of stuck headings
+             */
+            title: string
+            /**
+             * Use a simple heading style, or mimic in page headings
+             */
+            description: string
+            /**
+             * Simple
+             */
+            simple: string
+            /**
+             * Default
+             */
+            default: string
+        }
 	}
 }
 
@@ -75,7 +103,35 @@ export type TranslationFunctions = {
 			 * Maximum number of headings that can be displayed. 0 indicates no limit.
 			 */
 			description: () => LocalizedString
-		}
+		},
+        indicators: {
+            /**
+             * Display heading indicators
+             */
+            title: () => LocalizedString
+            /**
+             * Toggle to display heading level indicators
+             */
+            description: () => LocalizedString
+        }
+        style: {
+            /**
+             * Display of stuck headings
+             */
+            title: () => LocalizedString
+            /**
+             * Use a simple heading style, or mimic in page headings
+             */
+            description: () => LocalizedString
+            /**
+             * Simple
+             */
+            simple: () => LocalizedString
+            /**
+             * Default
+             */
+            default: () => LocalizedString
+        }
 	}
 }
 

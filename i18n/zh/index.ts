@@ -12,6 +12,17 @@ const zh: Translation = {
       title: '显示数量限制',
       description: '最大显示标题数量，0 表示不限制。',
     },
+    indicators: {
+      title: 'NEEDS DOING',
+      description: 'NEEDS DOING'
+    },
+    style: {
+        title: 'NEEDS DOING',
+        description:
+            'NEEDS DOING',
+        simple: 'NEEDS DOING',
+        default: 'NEEDS DOING'
+    }
   },
 };
 

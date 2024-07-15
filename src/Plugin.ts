@@ -205,16 +205,27 @@ export default class StickyHaeddingsPlugin extends Plugin {
     }
     const indentLevels: number[] = calcIndentLevels(finalHeadings);
     finalHeadings.forEach((heading, i) => {
+      let cls = `sticky-headings-item sticky-headings-level-${heading.level}`
       const headingItem = createDiv({
-        cls: `sticky-headings-item sticky-headings-level-${heading.level}`,
-        text: heading.heading,
-      });
-      const icon = createDiv({ cls: 'sticky-headings-icon' });
-      setIcon(icon, `heading-${heading.level}`);
-      headingItem.prepend(icon);
+          cls,
+          text: heading.heading
+      })
       headingItem.setAttribute('data-indent-level', `${indentLevels[i]}`);
-      headingContainer.append(headingItem);
-      headingItem.addEventListener('click', () => {
+      if (this.settings.indicators) {
+          const icon = createDiv({ cls: 'sticky-headings-icon' })
+          setIcon(icon, `heading-${heading.level}`)
+          headingItem.prepend(icon)
+        }
+        if (this.settings.style === 'default') {
+          const wrapper = createDiv({
+            cls: `HyperMD-header HyperMD-header-${heading.level}`
+          })
+          wrapper.append(headingItem)
+          headingContainer.append(wrapper)
+      } else {
+          headingContainer.append(headingItem)
+      }
+      headingItem.addEventListener('click', () => { 
         // @ts-expect-error typing error
         view.currentMode.applyScroll(heading.position.start.line, { highlight: true });
         setTimeout(() => {
@@ -293,5 +304,33 @@ class StickyHeadingsSetting extends PluginSettingTab {
           });
         });
       });
+    new Setting(containerEl)
+      .setName(L.setting.indicators.title())
+      .setDesc(L.setting.indicators.description())
+      .addToggle((toggle) => {
+        toggle
+            .setValue(this.plugin.settings.indicators)
+            .onChange((boolean) => {
+                this.update({
+                    ...this.plugin.settings,
+                    indicators: boolean
+                })
+            })
+      })
+    new Setting(containerEl)
+      .setName(L.setting.style.title())
+      .setDesc(L.setting.style.description())
+      .addDropdown((dropdown) => {
+          dropdown.addOption('simple', L.setting.style.simple())
+          dropdown.addOption('default', L.setting.style.default())
+          dropdown.setValue(this.plugin.settings.style)
+          dropdown.onChange((value) => {
+              this.update({
+                  ...this.plugin.settings,
+                  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                  style: value as 'simple' | 'default'
+              })
+          })
+      })
   }
 }
