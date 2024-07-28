@@ -13,7 +13,7 @@ import {
 } from 'obsidian';
 import defaultSetting from './defaultSetting';
 import L from './L';
-import { calcIndentLevels, getHeadings, isMarkdownFile, trivial } from './utils';
+import { calcIndentLevels, getHeadings, isMarkdownFile, trivial, parseMarkdown } from './utils';
 
 export default class StickyHaeddingsPlugin extends Plugin {
   settings: ISetting;
@@ -27,6 +27,8 @@ export default class StickyHaeddingsPlugin extends Plugin {
       lastHeight: number;
     }
   > = {};
+
+  markdownCache: Record<string, string> = {};
 
   detectPosition = debounce(
     (event: Event) => {
@@ -204,14 +206,19 @@ export default class StickyHaeddingsPlugin extends Plugin {
       finalHeadings = finalHeadings.slice(-this.settings.max);
     }
     const indentLevels: number[] = calcIndentLevels(finalHeadings);
-    finalHeadings.forEach((heading, i) => {
+    finalHeadings.forEach(async (heading, i) => {
       let cls = `sticky-headings-item sticky-headings-level-${heading.level}`
-      let text = heading.heading
-      let hasBrackets = /\[\[|\]\]/.test(text);
-      if(hasBrackets) text = text.replace(/\[\[|\]\]/g, '');
+      const cacheKey = `${heading.position.start.line}-${heading.heading}`;
+      let parsedText: string;
+      if (cacheKey in this.markdownCache) {
+        parsedText = this.markdownCache[cacheKey];
+      } else {
+        parsedText = await parseMarkdown(heading.heading, this.app);
+        this.markdownCache[cacheKey] = parsedText;
+      }
       const headingItem = createDiv({
         cls,
-        text,
+        text: parsedText,
       });
       const icon = createDiv({ cls: 'sticky-headings-icon' });
       setIcon(icon, `heading-${heading.level}`);

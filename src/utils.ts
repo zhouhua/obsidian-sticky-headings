@@ -1,5 +1,5 @@
 import type { App, HeadingCache, TAbstractFile } from 'obsidian';
-import { TFile } from 'obsidian';
+import { TFile, MarkdownView, MarkdownRenderer } from 'obsidian';
 
 export function isMarkdownFile(file: TFile | TAbstractFile) {
   if (!(file instanceof TFile)) {
@@ -10,6 +10,20 @@ export function isMarkdownFile(file: TFile | TAbstractFile) {
 
 export function getHeadings(file: TFile, app: App) {
   return app.metadataCache.getFileCache(file)?.headings ?? [];
+}
+
+export function parseMarkdown(markdown: string, app: App): Promise<string> {
+  const div = document.createElement('div');
+  const activeView = app.workspace.getActiveViewOfType(MarkdownView);
+
+  if (!activeView) {
+    console.warn('No active markdown view is available.');
+    return Promise.resolve(markdown); // Return the original markdown if rendering is not possible
+  }
+
+  return MarkdownRenderer.render(app, markdown, div, '', activeView).then(() => {
+    return div.innerText;
+  });
 }
 
 export function trivial(
