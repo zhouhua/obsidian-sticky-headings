@@ -179,7 +179,7 @@ export default class StickyHaeddingsPlugin extends Plugin {
     });
   }
 
-  renderHeadings(
+  async renderHeadings(
     headings: HeadingCache[] = [],
     container: HTMLElement,
     scrollTop: number,
@@ -206,11 +206,12 @@ export default class StickyHaeddingsPlugin extends Plugin {
       finalHeadings = finalHeadings.slice(-this.settings.max);
     }
     const indentLevels: number[] = calcIndentLevels(finalHeadings);
-    finalHeadings.forEach(async (heading, i) => {
+    for (const [i, heading] of finalHeadings.entries()) {
       let cls = `sticky-headings-item sticky-headings-level-${heading.level}`
-      const cacheKey = `${heading.position.start.line}-${heading.heading}`;
+      const cacheKey = heading.heading;
       let parsedText: string;
       if (cacheKey in this.markdownCache) {
+        console.log('skipping because its cached')
         parsedText = this.markdownCache[cacheKey];
       } else {
         parsedText = await parseMarkdown(heading.heading, this.app);
@@ -234,7 +235,7 @@ export default class StickyHaeddingsPlugin extends Plugin {
           view.currentMode.applyScroll(heading.position.start.line, { highlight: true });
         }, 20);
       });
-    });
+    };
     const newHeight = headingContainer.scrollHeight;
     const offset = newHeight - this.fileResolveMap[id].lastHeight;
     headingContainer.parentElement!.style.height = newHeight + 'px';
