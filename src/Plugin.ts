@@ -13,7 +13,7 @@ import {
 } from 'obsidian';
 import defaultSetting from './defaultSetting';
 import L from './L';
-import { calcIndentLevels, getHeadings, isMarkdownFile, trivial } from './utils';
+import { calcIndentLevels, getHeadings, isMarkdownFile, trivial, parseMarkdown } from './utils';
 
 export default class StickyHaeddingsPlugin extends Plugin {
   settings: ISetting;
@@ -27,6 +27,8 @@ export default class StickyHaeddingsPlugin extends Plugin {
       lastHeight: number;
     }
   > = {};
+
+  markdownCache: Record<string, string> = {};
 
   detectPosition = debounce(
     (event: Event) => {
@@ -177,7 +179,7 @@ export default class StickyHaeddingsPlugin extends Plugin {
     });
   }
 
-  renderHeadings(
+  async renderHeadings(
     headings: HeadingCache[] = [],
     container: HTMLElement,
     scrollTop: number,
@@ -204,10 +206,19 @@ export default class StickyHaeddingsPlugin extends Plugin {
       finalHeadings = finalHeadings.slice(-this.settings.max);
     }
     const indentLevels: number[] = calcIndentLevels(finalHeadings);
-    finalHeadings.forEach((heading, i) => {
+    for (const [i, heading] of finalHeadings.entries()) {
+      let cls = `sticky-headings-item sticky-headings-level-${heading.level}`
+      const cacheKey = heading.heading;
+      let parsedText: string;
+      if (cacheKey in this.markdownCache) {
+        parsedText = this.markdownCache[cacheKey];
+      } else {
+        parsedText = await parseMarkdown(heading.heading, this.app);
+        this.markdownCache[cacheKey] = parsedText;
+      }
       const headingItem = createDiv({
-        cls: `sticky-headings-item sticky-headings-level-${heading.level}`,
-        text: heading.heading,
+        cls,
+        text: parsedText,
       });
       const icon = createDiv({ cls: 'sticky-headings-icon' });
       setIcon(icon, `heading-${heading.level}`);
@@ -223,7 +234,7 @@ export default class StickyHaeddingsPlugin extends Plugin {
           view.currentMode.applyScroll(heading.position.start.line, { highlight: true });
         }, 20);
       });
-    });
+    };
     const newHeight = headingContainer.scrollHeight;
     const offset = newHeight - this.fileResolveMap[id].lastHeight;
     headingContainer.parentElement!.style.height = newHeight + 'px';
