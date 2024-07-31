@@ -82,6 +82,11 @@ export default class StickyHaeddingsPlugin extends Plugin {
       }),
     );
     this.registerEvent(
+      this.app.workspace.on('window-open', workspaceWindow => {
+        this.registerDomEvent(workspaceWindow.doc, 'scroll', this.detectPosition, true);
+      }),
+    );
+    this.registerEvent(
       this.app.workspace.on('active-leaf-change', leaf => {
         if (leaf?.id && (leaf.view instanceof MarkdownView)) {
           this.checkFileResolveMap();
@@ -126,8 +131,7 @@ export default class StickyHaeddingsPlugin extends Plugin {
 
   checkFileResolveMap() {
     const validIds: string[] = [];
-    this.app.workspace.iterateLeaves(
-      this.app.workspace.getFocusedContainer(),
+    this.app.workspace.iterateAllLeaves(
       leaf => {
         if (leaf.id) {
           validIds.push(leaf.id);
@@ -207,12 +211,13 @@ export default class StickyHaeddingsPlugin extends Plugin {
     }
     const indentLevels: number[] = calcIndentLevels(finalHeadings);
     for (const [i, heading] of finalHeadings.entries()) {
-      let cls = `sticky-headings-item sticky-headings-level-${heading.level}`
+      const cls = `sticky-headings-item sticky-headings-level-${heading.level}`;
       const cacheKey = heading.heading;
       let parsedText: string;
       if (cacheKey in this.markdownCache) {
         parsedText = this.markdownCache[cacheKey];
-      } else {
+      }
+      else {
         parsedText = await parseMarkdown(heading.heading, this.app);
         this.markdownCache[cacheKey] = parsedText;
       }
@@ -225,6 +230,7 @@ export default class StickyHaeddingsPlugin extends Plugin {
       headingItem.prepend(icon);
       headingItem.setAttribute('data-indent-level', `${indentLevels[i]}`);
       headingContainer.append(headingItem);
+      // eslint-disable-next-line @typescript-eslint/no-loop-func
       headingItem.addEventListener('click', () => {
         // @ts-expect-error typing error
         view.currentMode.applyScroll(heading.position.start.line, { highlight: true });
@@ -234,7 +240,7 @@ export default class StickyHaeddingsPlugin extends Plugin {
           view.currentMode.applyScroll(heading.position.start.line, { highlight: true });
         }, 20);
       });
-    };
+    }
     const newHeight = headingContainer.scrollHeight;
     const offset = newHeight - this.fileResolveMap[id].lastHeight;
     headingContainer.parentElement!.style.height = newHeight + 'px';
