@@ -133,6 +133,7 @@ export default class StickyHaeddingsPlugin extends Plugin {
     const validIds: string[] = [];
     this.app.workspace.iterateAllLeaves(
       leaf => {
+        console.log(leaf);
         if (leaf.id) {
           validIds.push(leaf.id);
           if (!(leaf.id in this.fileResolveMap)) {
