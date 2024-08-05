@@ -24,7 +24,6 @@ export default class StickyHaeddingsPlugin extends Plugin {
       file: TFile;
       view: MarkdownView;
       container: HTMLElement;
-      lastHeight: number;
     }
   > = {};
 
@@ -67,7 +66,6 @@ export default class StickyHaeddingsPlugin extends Plugin {
               file,
               container: activeView.contentEl,
               view: activeView,
-              lastHeight: 0,
             };
             this.checkFileResolveMap();
             this.updateHeadings([id]);
@@ -84,14 +82,6 @@ export default class StickyHaeddingsPlugin extends Plugin {
     this.registerEvent(
       this.app.workspace.on('window-open', workspaceWindow => {
         this.registerDomEvent(workspaceWindow.doc, 'scroll', this.detectPosition, true);
-      }),
-    );
-    this.registerEvent(
-      this.app.workspace.on('active-leaf-change', leaf => {
-        if (leaf?.id && (leaf.view instanceof MarkdownView)) {
-          this.checkFileResolveMap();
-          this.updateHeadings([leaf.id]);
-        }
       }),
     );
     this.registerEvent(
@@ -133,21 +123,17 @@ export default class StickyHaeddingsPlugin extends Plugin {
     const validIds: string[] = [];
     this.app.workspace.iterateAllLeaves(
       leaf => {
-        console.log(leaf);
-        if (leaf.id) {
+        if (leaf.id && leaf.view instanceof MarkdownView) {
           validIds.push(leaf.id);
           if (!(leaf.id in this.fileResolveMap)) {
-            if (leaf.view instanceof MarkdownView) {
-              const file = leaf.view.getFile();
-              if (file) {
-                this.fileResolveMap[leaf.id] = {
-                  resolve: true,
-                  file,
-                  container: leaf.view.contentEl,
-                  view: leaf.view,
-                  lastHeight: 0,
-                };
-              }
+            const file = leaf.view.getFile();
+            if (file) {
+              this.fileResolveMap[leaf.id] = {
+                resolve: true,
+                file,
+                container: leaf.view.contentEl,
+                view: leaf.view,
+              };
             }
           }
         }
@@ -201,10 +187,14 @@ export default class StickyHaeddingsPlugin extends Plugin {
     let headingContainer = container.querySelector(
       '.sticky-headings-container',
     );
+    let lastHeight = 0;
     if (!headingContainer) {
       const headingRoot = createDiv({ cls: 'sticky-headings-root' });
       headingContainer = headingRoot.createDiv({ cls: 'sticky-headings-container' });
       container.prepend(headingRoot);
+    }
+    else {
+      lastHeight = headingContainer.scrollHeight;
     }
     headingContainer.empty();
     if (this.settings.max) {
@@ -243,7 +233,7 @@ export default class StickyHaeddingsPlugin extends Plugin {
       });
     }
     const newHeight = headingContainer.scrollHeight;
-    const offset = newHeight - this.fileResolveMap[id].lastHeight;
+    const offset = newHeight - lastHeight;
     headingContainer.parentElement!.style.height = newHeight + 'px';
     const contentElement = container.querySelectorAll<HTMLElement>('.markdown-source-view, .markdown-reading-view');
     contentElement.forEach(item => {
@@ -251,7 +241,6 @@ export default class StickyHaeddingsPlugin extends Plugin {
       item.style.paddingTop = newHeight + 'px';
       scroller?.scrollTo({ top: scroller.scrollTop + offset, behavior: 'instant' });
     });
-    this.fileResolveMap[id].lastHeight = newHeight;
   }
 
   onunload() {}
