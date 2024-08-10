@@ -15,7 +15,7 @@ import defaultSetting from './defaultSetting';
 import L from './L';
 import { calcIndentLevels, getHeadings, isMarkdownFile, trivial, parseMarkdown } from './utils';
 
-export default class StickyHaeddingsPlugin extends Plugin {
+export default class StickyHeadingsPlugin extends Plugin {
   settings: ISetting;
   fileResolveMap: Record<
     string,
@@ -31,7 +31,6 @@ export default class StickyHaeddingsPlugin extends Plugin {
 
   detectPosition = debounce(
     (event: Event) => {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const target = event.target as HTMLElement | null;
       const scroller = target?.classList.contains('cm-scroller')
         || target?.classList.contains('markdown-preview-view');
@@ -115,7 +114,6 @@ export default class StickyHaeddingsPlugin extends Plugin {
       }),
     );
     this.registerDomEvent(document, 'scroll', this.detectPosition, true);
-    // eslint-disable-next-line @typescript-eslint/no-use-before-define
     this.addSettingTab(new StickyHeadingsSetting(this.app, this));
   }
 
@@ -141,7 +139,6 @@ export default class StickyHaeddingsPlugin extends Plugin {
     );
     Object.keys(this.fileResolveMap).forEach(id => {
       if (!validIds.includes(id)) {
-        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
         delete this.fileResolveMap[id];
       }
     });
@@ -160,12 +157,11 @@ export default class StickyHaeddingsPlugin extends Plugin {
   updateHeadings(ids: string[]) {
     ids.forEach(id => {
       const item = this.fileResolveMap[id];
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (item) {
         const { file, view, container } = item;
         const headings = getHeadings(file, this.app);
         const scrollTop = view.currentMode.getScroll();
-        this.renderHeadings(headings, container, scrollTop, view, id);
+        this.renderHeadings(headings, container, scrollTop, view);
       }
     });
   }
@@ -174,8 +170,7 @@ export default class StickyHaeddingsPlugin extends Plugin {
     headings: HeadingCache[] = [],
     container: HTMLElement,
     scrollTop: number,
-    view: MarkdownView,
-    id: string,
+    view: MarkdownView
   ) {
     const validHeadings = headings.filter(
       heading => heading.position.end.line + 1 <= scrollTop,
@@ -221,14 +216,11 @@ export default class StickyHaeddingsPlugin extends Plugin {
       headingItem.prepend(icon);
       headingItem.setAttribute('data-indent-level', `${indentLevels[i]}`);
       headingContainer.append(headingItem);
-      // eslint-disable-next-line @typescript-eslint/no-loop-func
       headingItem.addEventListener('click', () => {
-        // @ts-expect-error typing error
-        view.currentMode.applyScroll(heading.position.start.line, { highlight: true });
+        view.currentMode.applyScroll(heading.position.start.line);
         setTimeout(() => {
           // wait for headings tree rendered
-          // @ts-expect-error typing error
-          view.currentMode.applyScroll(heading.position.start.line, { highlight: true });
+          view.currentMode.applyScroll(heading.position.start.line);
         }, 20);
       });
     }
@@ -246,7 +238,6 @@ export default class StickyHaeddingsPlugin extends Plugin {
   onunload() {}
 
   async loadSettings() {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     this.settings = { ...defaultSetting, ...(await this.loadData() as ISetting) };
   }
 
@@ -256,10 +247,10 @@ export default class StickyHaeddingsPlugin extends Plugin {
 }
 
 class StickyHeadingsSetting extends PluginSettingTab {
-  plugin: StickyHaeddingsPlugin;
+  plugin: StickyHeadingsPlugin;
   render: (settings: ISetting) => void;
 
-  constructor(app: App, plugin: StickyHaeddingsPlugin) {
+  constructor(app: App, plugin: StickyHeadingsPlugin) {
     super(app, plugin);
     this.plugin = plugin;
   }
@@ -283,7 +274,6 @@ class StickyHeadingsSetting extends PluginSettingTab {
         dropdown.onChange(value => {
           this.update({
             ...this.plugin.settings,
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             mode: value as 'default' | 'concise',
           });
         });
