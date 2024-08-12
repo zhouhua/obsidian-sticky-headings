@@ -216,23 +216,36 @@ export default class StickyHeadingsPlugin extends Plugin {
       headingItem.prepend(icon);
       headingItem.setAttribute('data-indent-level', `${indentLevels[i]}`);
       headingContainer.append(headingItem);
+      const scroller = container.querySelector(
+          ".cm-scroller, .markdown-preview-view",
+        );
       headingItem.addEventListener('click', () => {
-        view.currentMode.applyScroll(heading.position.start.line);
-        setTimeout(() => {
-          // wait for headings tree rendered
-          view.currentMode.applyScroll(heading.position.start.line);
-        }, 20);
+        const stickyContainerHeight = headingContainer.offsetHeight || 0;
+
+        // Use the heading's offset to get the block information allowing scroll in document
+        // lineBlockAt works for headings outside of current dom too
+        // https://codemirror.net/docs/ref/#view.EditorView.lineBlockAt
+        const blockInfo = view.editor.cm.lineBlockAt(
+          heading.position.start.offset,
+        );
+
+        // Calculate the target scroll position
+        // this is the offset essentially, which allows for precise scrolling
+        const targetScrollTop = blockInfo.top;
+        // when clicking top header, 0 is the start of the content, not including the header. This needs fixing
+
+        // stickyContainerHeight is still the height pre-scrolled
+        // it should calculate the new height pre-scroll so we can remove -26 manual
+        // behavior can be set as an option, smooth or instant (I prefer smooth, others might not)
+        scroller?.scrollTo({
+          top: targetScrollTop - (stickyContainerHeight - 26),
+          behavior: "smooth",
+        });
+
+        // todo
+        // fix issues with sticky container height interfering with scrollTo
       });
     }
-    const newHeight = headingContainer.scrollHeight;
-    const offset = newHeight - lastHeight;
-    headingContainer.parentElement!.style.height = newHeight + 'px';
-    const contentElement = container.querySelectorAll<HTMLElement>('.markdown-source-view, .markdown-reading-view');
-    contentElement.forEach(item => {
-      const scroller = item.querySelector('.cm-scroller, .markdown-preview-view');
-      item.style.paddingTop = newHeight + 'px';
-      scroller?.scrollTo({ top: scroller.scrollTop + offset, behavior: 'instant' });
-    });
   }
 
   onunload() {}
