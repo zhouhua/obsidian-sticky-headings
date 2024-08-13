@@ -195,7 +195,6 @@ export default class StickyHeadingsPlugin extends Plugin {
       trivial(validHeadings, finalHeadings, this.settings.mode);
     }
     let lastHeight = 0;
-    // Filter headings based on their visibility relative to the bottom of the sticky container
     if (!headingContainer) {
       const headingRoot = createDiv({ cls: "sticky-headings-root" });
       headingContainer = headingRoot.createDiv({
@@ -205,13 +204,10 @@ export default class StickyHeadingsPlugin extends Plugin {
     } else {
       lastHeight = headingContainer.getBoundingClientRect().height;
     }
-
     headingContainer?.empty();
-
     if (this.settings.max) {
       finalHeadings = finalHeadings.slice(-this.settings.max);
     }
-
     const indentLevels: number[] = calcIndentLevels(finalHeadings);
     for (const [i, heading] of finalHeadings.entries()) {
       const cls = `sticky-headings-item sticky-headings-level-${heading.level}`;
