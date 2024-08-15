@@ -185,11 +185,15 @@ export default class StickyHeadingsPlugin extends Plugin {
     );
     const stickyContainerHeight = headingContainer?.getBoundingClientRect()
       .height || 0;
-    const validHeadings = headings.filter((heading) =>
-      view.editor.cm.lineBlockAt(
+    const inlineTitleHeight = container.querySelector(".inline-title")
+      ?.getBoundingClientRect().height || 0;
+    const validHeadings = headings.filter((heading) => {
+      const line = view.editor.cm.lineBlockAt(
         heading.position.end.offset,
-      ).bottom <= scrollTop + stickyContainerHeight
-    );
+      );
+      return line.bottom + line.height <=
+        scrollTop + stickyContainerHeight - inlineTitleHeight;
+    });
     let finalHeadings: HeadingCache[] = [];
     if (validHeadings.length) {
       trivial(validHeadings, finalHeadings, this.settings.mode);
@@ -204,7 +208,7 @@ export default class StickyHeadingsPlugin extends Plugin {
     } else {
       lastHeight = headingContainer.getBoundingClientRect().height;
     }
-    headingContainer?.empty();
+    headingContainer.empty();
     if (this.settings.max) {
       finalHeadings = finalHeadings.slice(-this.settings.max);
     }
@@ -232,47 +236,28 @@ export default class StickyHeadingsPlugin extends Plugin {
       //   ".cm-scroller, .markdown-preview-view",
       // );
       // need to update to get live preview scroller manually
-      const scroller = view.editor.cm.scrollDOM;
       headingItem.addEventListener("click", () => {
-        const stickyContainerHeight = headingContainer.offsetHeight || 0;
-
         // Use the heading's offset to get the block information allowing scroll in document
         // lineBlockAt works for headings outside of current dom too
         // https://codemirror.net/docs/ref/#view.EditorView.lineBlockAt
-        const blockInfo = view.editor.cm.lineBlockAt(
-          heading.position.end.offset,
+        const { top } = view.editor.cm.lineBlockAt(
+          heading.position.start.offset,
         );
 
-        // Calculate the target scroll position
-        // this is the offset essentially, which allows for precise scrolling
-        const targetScrollTop = blockInfo.top;
-
-        // stickyContainerHeight is still the height pre-scrolled
-        // behavior can be set as an option, smooth or instant (I prefer smooth, others might not)
-        // smooth has issues with debouncing
-        scroller?.scrollTo({
-          top: targetScrollTop - stickyContainerHeight,
-          behavior: "instant",
+        // check if live preview and use different scroller element
+        view.editor.cm.scrollDOM.scrollTo({
+          top,
+          behavior: this.settings.scrollBehaviour,
         });
-
-        // maybe necessary to calculate new stickyheaderheight except that it doesn't update the headers in here
-        // setTimeout(() => {
-        //   const newHeight = headingContainer.getBoundingClientRect().height;
-        //   const offset = lastHeight - newHeight;
-        //   console.log("🚀 ~ offset:", newHeight, lastHeight, offset);
-        //   // const stickyContainerHeight = headingContainer.offsetHeight || 0;
-        //   // console.log("🚀 ~ stickyContainerHeight:", stickyContainerHeight);
-        //   scroller?.scrollTo({
-        //     top: scroller.scrollTop + offset,
-        //     behavior: "instant",
-        //   });
-        // }, 1000);
 
         // todo
         // fix issues with sticky container height interfering with scrollTo
       });
     }
   }
+
+  // add section for current headings array so when we click on it we can immediately remove it
+  // and get the expected array at that position
 
   onunload() {}
 
@@ -329,6 +314,21 @@ class StickyHeadingsSetting extends PluginSettingTab {
           this.update({
             ...this.plugin.settings,
             max: parseInt(value, 10) || 0,
+          });
+        });
+      });
+    new Setting(containerEl)
+      .setName(L.setting.scrollBehaviour.title())
+      .setDesc(L.setting.scrollBehaviour.description())
+      .addDropdown((dropdown) => {
+        dropdown.addOption("auto", L.setting.scrollBehaviour.auto());
+        dropdown.addOption("smooth", L.setting.scrollBehaviour.smooth());
+        dropdown.addOption("instant", L.setting.scrollBehaviour.instant());
+        dropdown.setValue(this.plugin.settings.scrollBehaviour);
+        dropdown.onChange((value) => {
+          this.update({
+            ...this.plugin.settings,
+            scrollBehaviour: value as ScrollBehavior,
           });
         });
       });
