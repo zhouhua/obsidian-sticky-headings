@@ -188,10 +188,10 @@ export default class StickyHeadingsPlugin extends Plugin {
     const inlineTitleHeight = container.querySelector(".inline-title")
       ?.getBoundingClientRect().height || 0;
     const validHeadings = headings.filter((heading) => {
-      const line = view.editor.cm.lineBlockAt(
+      const { bottom, height } = view.editor.cm.lineBlockAt(
         heading.position.end.offset,
       );
-      return line.bottom + line.height <=
+      return bottom + height <=
         scrollTop + stickyContainerHeight - inlineTitleHeight;
     });
     let finalHeadings: HeadingCache[] = [];
