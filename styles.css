@@ -14,66 +14,9 @@ settings:
 */
 
 :root {
-	--indent-width: 1em;
+  --indent-width: 1em;
 }
 
 .view-content {
-	position: relative;
-}
-
-.sticky-headings-root {
-	height: fit-content;
-	overflow: hidden;
-	position: absolute;
-	top: 0;
-	width: 100%;
-	padding: 0 var(--file-margins);
-	z-index: 1;
-}
-
-.sticky-headings-container {
-	font-size: 12px;
-	margin: 0 auto;
-	max-width: var(--file-line-width);
-}
-
-.sticky-headings-item {
-	line-height: 18px;
-	display: flex;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-	/* height: 18px; */
-	cursor: var(--cursor-link);
-}
-
-.sticky-headings-item svg {
-	width: 16px;
-	height: 16px;
-	margin-right: 8px;
-	color: var(--link-color);
-}
-
-.sticky-headings-item[data-indent-level="1"] {
-	padding-left: var(--indent-width);
-}
-
-.sticky-headings-item[data-indent-level="2"] {
-	padding-left: calc(var(--indent-width) * 2);
-}
-
-.sticky-headings-item[data-indent-level="3"] {
-	padding-left: calc(var(--indent-width) * 3);
-}
-
-.sticky-headings-item[data-indent-level="4"] {
-	padding-left: calc(var(--indent-width) * 4);
-}
-
-.sticky-headings-item[data-indent-level="5"] {
-	padding-left: calc(var(--indent-width) * 5);
-}
-
-.sticky-headings-item:last-of-type {
-	padding-bottom: 5px;
+  position: relative;
 }
