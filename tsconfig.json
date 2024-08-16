@@ -1,7 +1,8 @@
 {
+  "extends": "@tsconfig/svelte/tsconfig.json",
   "compilerOptions": {
     "baseUrl": ".",
-    "inlineSourceMap": true,
+    "sourceMap": true,
     "inlineSources": true,
     "module": "ESNext",
     "target": "ES6",
@@ -10,19 +11,11 @@
     "moduleResolution": "node",
     "importHelpers": true,
     "isolatedModules": true,
-		"strictNullChecks": true,
-		"allowSyntheticDefaultImports": true,
+    "strictNullChecks": true,
+    "allowSyntheticDefaultImports": true,
     "outDir": "dist",
-    "lib": [
-      "DOM",
-      "ES5",
-      "ES6",
-      "ES7"
-    ]
+    "lib": ["DOM", "ES5", "ES6", "ES7"],
+    "types": ["svelte", "node"]
   },
-  "include": [
-    "**/*.ts",
-    "*.mjs",
-    "eslint.config.js"
-  ]
+  "include": ["**/*.ts", "*.mjs", "eslint.config.js", "**/*.svelte"]
 }

@@ -1,11 +1,12 @@
 import debounce from 'lodash/debounce';
-import type { App, HeadingCache, TFile } from 'obsidian';
+import type { App, HeadingCache, TFile, View, WorkspaceLeaf } from 'obsidian';
 import {
   MarkdownView,
   Plugin,
   PluginSettingTab,
   setIcon,
   Setting,
+  ItemView,
 } from 'obsidian';
 import defaultSetting from './defaultSetting';
 import L from './L';
@@ -17,7 +18,11 @@ import {
   trivial,
 } from './utils';
 
-export default class StickyHaeddingsPlugin extends Plugin {
+import StickyHeader from './ui/StickyHeader.svelte';
+import { headings } from './ui/store';
+
+export default class StickyHeadingsPlugin extends Plugin {
+  private stickyHeaderComponent: StickyHeader | null = null;
   settings: ISetting;
   fileResolveMap: Record<
     string,
@@ -52,8 +57,31 @@ export default class StickyHaeddingsPlugin extends Plugin {
     { leading: true, trailing: true }
   );
 
+  private addStickyHeader(view: ItemView) {
+    const { contentEl } = view;
+    if (contentEl) {
+      this.stickyHeaderComponent = new StickyHeader({
+        target: contentEl,
+      });
+      headings.set(['heading 1', 'next heading', 'heading 3']);
+    }
+  }
+
+  private removeStickyHeader() {
+    if (this.stickyHeaderComponent) {
+      this.stickyHeaderComponent?.$destroy();
+      this.stickyHeaderComponent = null;
+    }
+  }
+
   async onload() {
     await this.loadSettings();
+
+    const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
+    if (activeView && activeView.leaf.view) {
+      this.addStickyHeader(activeView.leaf.view as ItemView);
+    }
+
     this.registerEvent(
       this.app.workspace.on('file-open', (file) => {
         if (file && isMarkdownFile(file)) {
@@ -80,6 +108,16 @@ export default class StickyHaeddingsPlugin extends Plugin {
       this.app.workspace.on('layout-change', () => {
         this.checkFileResolveMap();
         this.updateHeadings(Object.keys(this.fileResolveMap));
+
+        this.removeStickyHeader();
+
+        this.app.workspace.onLayoutReady(() => {
+          const activeView =
+            this.app.workspace.getActiveViewOfType(MarkdownView);
+          if (activeView && activeView.leaf.view) {
+            this.addStickyHeader(activeView.leaf.view as ItemView);
+          }
+        });
       })
     );
     this.registerEvent(
@@ -94,6 +132,7 @@ export default class StickyHaeddingsPlugin extends Plugin {
     );
     this.registerEvent(
       this.app.workspace.on('editor-change', (editor, info) => {
+        console.log('when is this run');
         const { file } = info;
         if (file && isMarkdownFile(file)) {
           Object.values(this.fileResolveMap).forEach((item) => {
@@ -260,7 +299,9 @@ export default class StickyHaeddingsPlugin extends Plugin {
     });
   }
 
-  onunload() {}
+  onunload() {
+    this.removeStickyHeader();
+  }
 
   async loadSettings() {
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
@@ -276,10 +317,10 @@ export default class StickyHaeddingsPlugin extends Plugin {
 }
 
 class StickyHeadingsSetting extends PluginSettingTab {
-  plugin: StickyHaeddingsPlugin;
+  plugin: StickyHeadingsPlugin;
   render: (settings: ISetting) => void;
 
-  constructor(app: App, plugin: StickyHaeddingsPlugin) {
+  constructor(app: App, plugin: StickyHeadingsPlugin) {
     super(app, plugin);
     this.plugin = plugin;
   }
