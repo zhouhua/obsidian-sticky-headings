@@ -1,59 +1,57 @@
-import debounce from "lodash/debounce";
-import type { App, HeadingCache, TFile } from "obsidian";
+import type {
+  App,
+  HeadingCache,
+} from 'obsidian';
 import {
-  MarkdownView,
-  Plugin,
-  PluginSettingTab,
   setIcon,
   Setting,
-} from "obsidian";
-import defaultSetting from "./defaultSetting";
-import L from "./L";
+  Plugin,
+  MarkdownView,
+  PluginSettingTab,
+} from 'obsidian';
+import defaultSetting from './defaultSetting';
+import L from './L';
 import {
   calcIndentLevels,
   getHeadings,
   isMarkdownFile,
   parseMarkdown,
-  trivial,
-} from "./utils";
-
+} from './utils';
+import type { IFileResolve, ISetting } from './types';
+import getShownHeadings from './getShownHeadings';
+import { throttle } from 'lodash';
 export default class StickyHeadingsPlugin extends Plugin {
   settings: ISetting;
   fileResolveMap: Record<
     string,
-    {
-      resolve: boolean;
-      file: TFile;
-      view: MarkdownView;
-      container: HTMLElement;
-    }
+    IFileResolve
   > = {};
 
   markdownCache: Record<string, string> = {};
 
-  detectPosition = debounce(
+  detectPosition = throttle(
     (event: Event) => {
       const target = event.target as HTMLElement | null;
-      const scroller = target?.classList.contains("cm-scroller") ||
-        target?.classList.contains("markdown-preview-view");
+      const scroller = target?.classList.contains('cm-scroller')
+        || target?.classList.contains('markdown-preview-view');
       if (scroller) {
-        const container = target?.closest(".view-content");
+        const container = target?.closest('.view-content');
         if (container) {
           const ids = Object.keys(this.fileResolveMap).filter(
-            (id) => this.fileResolveMap[id].container === container,
+            id => this.fileResolveMap[id].container === container,
           );
           this.updateHeadings(ids);
         }
       }
     },
-    20,
+    50,
     { leading: true, trailing: true },
   );
 
   async onload() {
     await this.loadSettings();
     this.registerEvent(
-      this.app.workspace.on("file-open", (file) => {
+      this.app.workspace.on('file-open', file => {
         if (file && isMarkdownFile(file)) {
           const activeView = this.app.workspace.getActiveViewOfType(
             MarkdownView,
@@ -76,26 +74,26 @@ export default class StickyHeadingsPlugin extends Plugin {
       }),
     );
     this.registerEvent(
-      this.app.workspace.on("layout-change", () => {
+      this.app.workspace.on('layout-change', () => {
         this.checkFileResolveMap();
         this.updateHeadings(Object.keys(this.fileResolveMap));
       }),
     );
     this.registerEvent(
-      this.app.workspace.on("window-open", (workspaceWindow) => {
+      this.app.workspace.on('window-open', workspaceWindow => {
         this.registerDomEvent(
           workspaceWindow.doc,
-          "scroll",
+          'scroll',
           this.detectPosition,
           true,
         );
       }),
     );
     this.registerEvent(
-      this.app.workspace.on("editor-change", (editor, info) => {
+      this.app.workspace.on('editor-change', (editor, info) => {
         const { file } = info;
         if (file && isMarkdownFile(file)) {
-          Object.values(this.fileResolveMap).forEach((item) => {
+          Object.values(this.fileResolveMap).forEach(item => {
             if (item.file.path === file.path) {
               item.resolve = false;
             }
@@ -104,10 +102,10 @@ export default class StickyHeadingsPlugin extends Plugin {
       }),
     );
     this.registerEvent(
-      this.app.metadataCache.on("resolve", (file) => {
+      this.app.metadataCache.on('resolve', file => {
         if (isMarkdownFile(file)) {
           const ids: string[] = [];
-          Object.keys(this.fileResolveMap).forEach((id) => {
+          Object.keys(this.fileResolveMap).forEach(id => {
             const item = this.fileResolveMap[id];
             if (item.file.path === file.path && !item.resolve) {
               item.resolve = true;
@@ -121,14 +119,15 @@ export default class StickyHeadingsPlugin extends Plugin {
         }
       }),
     );
-    this.registerDomEvent(document, "scroll", this.detectPosition, true);
+    this.registerDomEvent(document, 'scroll', this.detectPosition, true);
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define
     this.addSettingTab(new StickyHeadingsSetting(this.app, this));
   }
 
   checkFileResolveMap() {
     const validIds: string[] = [];
     this.app.workspace.iterateAllLeaves(
-      (leaf) => {
+      leaf => {
         if (leaf.id && leaf.view instanceof MarkdownView) {
           validIds.push(leaf.id);
           if (!(leaf.id in this.fileResolveMap)) {
@@ -145,7 +144,7 @@ export default class StickyHeadingsPlugin extends Plugin {
         }
       },
     );
-    Object.keys(this.fileResolveMap).forEach((id) => {
+    Object.keys(this.fileResolveMap).forEach(id => {
       if (!validIds.includes(id)) {
         delete this.fileResolveMap[id];
       }
@@ -163,14 +162,12 @@ export default class StickyHeadingsPlugin extends Plugin {
   }
 
   updateHeadings(ids: string[]) {
-    ids.forEach((id) => {
+    ids.forEach(id => {
       const item = this.fileResolveMap[id];
-      if (item) {
-        const { file, view, container } = item;
-        const headings = getHeadings(file, this.app);
-        const scrollTop = view.editor.getScrollInfo().top;
-        this.renderHeadings(headings, container, scrollTop, view);
-      }
+      const { file, view, container } = item;
+      const headings = getHeadings(file, this.app);
+      const scrollTop = view.editor.getScrollInfo().top;
+      this.renderHeadings(headings, container, scrollTop, view);
     });
   }
 
@@ -181,45 +178,28 @@ export default class StickyHeadingsPlugin extends Plugin {
     view: MarkdownView,
   ) {
     let headingContainer = container.querySelector(
-      ".sticky-headings-container",
+      '.sticky-headings-container',
     );
-    const stickyContainerHeight = headingContainer?.getBoundingClientRect()
+    let stickyContainerHeight = headingContainer?.getBoundingClientRect()
       .height || 0;
-    const inlineTitleHeight = container.querySelector(".inline-title")
-      ?.getBoundingClientRect().height || 0;
-    const validHeadings = headings.filter((heading) => {
-      const { bottom, height } = view.editor.cm.lineBlockAt(
-        heading.position.end.offset,
-      );
-      return bottom + height <=
-        scrollTop + stickyContainerHeight - inlineTitleHeight;
-    });
-    let finalHeadings: HeadingCache[] = [];
-    if (validHeadings.length) {
-      trivial(validHeadings, finalHeadings, this.settings.mode);
-    }
-    let lastHeight = 0;
+    const finalHeadings = getShownHeadings(headings, view, stickyContainerHeight, this.settings);
     if (!headingContainer) {
-      const headingRoot = createDiv({ cls: "sticky-headings-root" });
+      const headingRoot = createDiv({ cls: 'sticky-headings-root' });
       headingContainer = headingRoot.createDiv({
-        cls: "sticky-headings-container",
+        cls: 'sticky-headings-container',
       });
       container.prepend(headingRoot);
-    } else {
-      lastHeight = headingContainer.getBoundingClientRect().height;
     }
     headingContainer.empty();
-    if (this.settings.max) {
-      finalHeadings = finalHeadings.slice(-this.settings.max);
-    }
     const indentLevels: number[] = calcIndentLevels(finalHeadings);
-    for (const [i, heading] of finalHeadings.entries()) {
+    for (const [i, { heading, offset }] of finalHeadings.entries()) {
       const cls = `sticky-headings-item sticky-headings-level-${heading.level}`;
       const cacheKey = heading.heading;
       let parsedText: string;
       if (cacheKey in this.markdownCache) {
         parsedText = this.markdownCache[cacheKey];
-      } else {
+      }
+      else {
         parsedText = await parseMarkdown(heading.heading, this.app);
         this.markdownCache[cacheKey] = parsedText;
       }
@@ -227,33 +207,29 @@ export default class StickyHeadingsPlugin extends Plugin {
         cls,
         text: parsedText,
       });
-      const icon = createDiv({ cls: "sticky-headings-icon" });
+      const icon = createDiv({ cls: 'sticky-headings-icon' });
       setIcon(icon, `heading-${heading.level}`);
       headingItem.prepend(icon);
-      headingItem.setAttribute("data-indent-level", `${indentLevels[i]}`);
+      headingItem.setAttribute('data-indent-level', `${indentLevels[i]}`);
       headingContainer.append(headingItem);
-      // const scroller = container.querySelector(
-      //   ".cm-scroller, .markdown-preview-view",
-      // );
       // need to update to get live preview scroller manually
-      headingItem.addEventListener("click", () => {
-        // Use the heading's offset to get the block information allowing scroll in document
-        // lineBlockAt works for headings outside of current dom too
-        // https://codemirror.net/docs/ref/#view.EditorView.lineBlockAt
-        const { top } = view.editor.cm.lineBlockAt(
-          heading.position.start.offset,
-        );
-
+      // eslint-disable-next-line @typescript-eslint/no-loop-func
+      headingItem.addEventListener('click', () => {
         // check if live preview and use different scroller element
-        view.editor.cm.scrollDOM.scrollTo({
-          top,
-          behavior: this.settings.scrollBehaviour,
-        });
+        (view.currentMode.type === 'preview'
+          ? view.previewMode.renderer.previewEl
+          : view.editor.cm.scrollDOM)
+          .scrollTo({
+            top: offset - stickyContainerHeight,
+            behavior: this.settings.scrollBehaviour,
+          });
 
         // todo
         // fix issues with sticky container height interfering with scrollTo
       });
     }
+    stickyContainerHeight = headingContainer.getBoundingClientRect()
+      .height || 0;
   }
 
   // add section for current headings array so when we click on it we can immediately remove it
@@ -294,23 +270,23 @@ class StickyHeadingsSetting extends PluginSettingTab {
     new Setting(containerEl)
       .setName(L.setting.mode.title())
       .setDesc(L.setting.mode.description())
-      .addDropdown((dropdown) => {
-        dropdown.addOption("default", L.setting.mode.default());
-        dropdown.addOption("concise", L.setting.mode.concise());
+      .addDropdown(dropdown => {
+        dropdown.addOption('default', L.setting.mode.default());
+        dropdown.addOption('concise', L.setting.mode.concise());
         dropdown.setValue(this.plugin.settings.mode);
-        dropdown.onChange((value) => {
+        dropdown.onChange(value => {
           this.update({
             ...this.plugin.settings,
-            mode: value as "default" | "concise",
+            mode: value as 'default' | 'concise',
           });
         });
       });
     new Setting(containerEl)
       .setName(L.setting.max.title())
       .setDesc(L.setting.max.description())
-      .addText((text) => {
+      .addText(text => {
         text.setValue(this.plugin.settings.max.toString());
-        text.onChange((value) => {
+        text.onChange(value => {
           this.update({
             ...this.plugin.settings,
             max: parseInt(value, 10) || 0,
@@ -320,12 +296,12 @@ class StickyHeadingsSetting extends PluginSettingTab {
     new Setting(containerEl)
       .setName(L.setting.scrollBehaviour.title())
       .setDesc(L.setting.scrollBehaviour.description())
-      .addDropdown((dropdown) => {
-        dropdown.addOption("auto", L.setting.scrollBehaviour.auto());
-        dropdown.addOption("smooth", L.setting.scrollBehaviour.smooth());
-        dropdown.addOption("instant", L.setting.scrollBehaviour.instant());
+      .addDropdown(dropdown => {
+        dropdown.addOption('auto', L.setting.scrollBehaviour.auto());
+        dropdown.addOption('smooth', L.setting.scrollBehaviour.smooth());
+        dropdown.addOption('instant', L.setting.scrollBehaviour.instant());
         dropdown.setValue(this.plugin.settings.scrollBehaviour);
-        dropdown.onChange((value) => {
+        dropdown.onChange(value => {
           this.update({
             ...this.plugin.settings,
             scrollBehaviour: value as ScrollBehavior,
