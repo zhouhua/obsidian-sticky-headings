@@ -15,8 +15,7 @@ declare global {
 let locale: Locales = 'en';
 try {
   locale = (window.i18next.language || '').startsWith('zh') ? 'zh' : 'en';
-}
-catch (e) {
+} catch (e) {
   /* empty */
 }
 

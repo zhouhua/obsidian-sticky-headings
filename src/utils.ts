@@ -21,35 +21,39 @@ export function parseMarkdown(markdown: string, app: App): Promise<string> {
     return Promise.resolve(markdown); // Return the original markdown if rendering is not possible
   }
 
-  return MarkdownRenderer.render(app, markdown, div, '', activeView).then(() => {
-    return div.innerText;
-  });
+  return MarkdownRenderer.render(app, markdown, div, '', activeView).then(
+    () => {
+      return div.innerText;
+    }
+  );
 }
 
 export function trivial(
   subHeadings: HeadingCache[],
   result: HeadingCache[],
-  mode: 'default' | 'concise',
+  mode: 'default' | 'concise'
 ) {
   if (!subHeadings.length) {
     return result;
   }
   const topLevel = subHeadings.reduce(
     (res, cur) => Math.min(res, cur.level),
-    6,
+    6
   );
-  const indexesOfTopLevel = subHeadings.reduce<number[]>((indexes, cur, index) => {
-    if (cur.level === topLevel) {
-      indexes.push(index);
-    }
-    return indexes;
-  }, []);
+  const indexesOfTopLevel = subHeadings.reduce<number[]>(
+    (indexes, cur, index) => {
+      if (cur.level === topLevel) {
+        indexes.push(index);
+      }
+      return indexes;
+    },
+    []
+  );
   if (mode === 'concise') {
     if (indexesOfTopLevel.length >= 1) {
       result.push(subHeadings[indexesOfTopLevel[indexesOfTopLevel.length - 1]]);
     }
-  }
-  else {
+  } else {
     for (const index of indexesOfTopLevel) {
       result.push(subHeadings[index]);
     }
@@ -57,11 +61,15 @@ export function trivial(
   trivial(
     subHeadings.slice(indexesOfTopLevel[indexesOfTopLevel.length - 1] + 1),
     result,
-    mode,
+    mode
   );
 }
 
-function findLastFromindex<T = unknown>(list: T[], lastIndex: number, check: (item: T) => boolean): number {
+function findLastFromindex<T = unknown>(
+  list: T[],
+  lastIndex: number,
+  check: (item: T) => boolean
+): number {
   let index = -1;
   for (let i = lastIndex; i >= 0; i--) {
     if (check(list[i])) {
@@ -79,19 +87,26 @@ export function calcIndentLevels(headings: HeadingCache[]): number[] {
   }
   const topLevelIndex = headings.reduce<number>(
     (res, cur, i) => (cur.level < headings[res].level ? i : res),
-    0,
+    0
   );
-  result.push(...calcIndentLevels(headings.slice(0, topLevelIndex)).map(level => level + 1));
+  result.push(
+    ...calcIndentLevels(headings.slice(0, topLevelIndex)).map(
+      (level) => level + 1
+    )
+  );
   headings.slice(topLevelIndex).forEach((heading, i, list) => {
     if (i === 0) {
       result.push(0);
       return;
     }
-    const parentIndex = findLastFromindex(list, i - 1, item => item.level < heading.level);
+    const parentIndex = findLastFromindex(
+      list,
+      i - 1,
+      (item) => item.level < heading.level
+    );
     if (parentIndex === -1) {
       result.push(0);
-    }
-    else {
+    } else {
       result.push(result[parentIndex + topLevelIndex] + 1);
     }
   });

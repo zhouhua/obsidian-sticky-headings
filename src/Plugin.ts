@@ -1,9 +1,5 @@
 import debounce from 'lodash/debounce';
-import type {
-  App,
-  HeadingCache,
-  TFile,
-} from 'obsidian';
+import type { App, HeadingCache, TFile } from 'obsidian';
 import {
   MarkdownView,
   Plugin,
@@ -13,7 +9,13 @@ import {
 } from 'obsidian';
 import defaultSetting from './defaultSetting';
 import L from './L';
-import { calcIndentLevels, getHeadings, isMarkdownFile, trivial, parseMarkdown } from './utils';
+import {
+  calcIndentLevels,
+  getHeadings,
+  isMarkdownFile,
+  parseMarkdown,
+  trivial,
+} from './utils';
 
 export default class StickyHaeddingsPlugin extends Plugin {
   settings: ISetting;
@@ -33,29 +35,30 @@ export default class StickyHaeddingsPlugin extends Plugin {
     (event: Event) => {
       // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const target = event.target as HTMLElement | null;
-      const scroller = target?.classList.contains('cm-scroller')
-        || target?.classList.contains('markdown-preview-view');
+      const scroller =
+        target?.classList.contains('cm-scroller') ||
+        target?.classList.contains('markdown-preview-view');
       if (scroller) {
         const container = target?.closest('.view-content');
         if (container) {
           const ids = Object.keys(this.fileResolveMap).filter(
-            id => this.fileResolveMap[id].container === container,
+            (id) => this.fileResolveMap[id].container === container
           );
           this.updateHeadings(ids);
         }
       }
     },
     20,
-    { leading: true, trailing: true },
+    { leading: true, trailing: true }
   );
 
   async onload() {
     await this.loadSettings();
     this.registerEvent(
-      this.app.workspace.on('file-open', file => {
+      this.app.workspace.on('file-open', (file) => {
         if (file && isMarkdownFile(file)) {
-          const activeView
-            = this.app.workspace.getActiveViewOfType(MarkdownView);
+          const activeView =
+            this.app.workspace.getActiveViewOfType(MarkdownView);
           const id = activeView?.leaf.id;
           if (id) {
             if (!(id in this.fileResolveMap)) {
@@ -71,36 +74,41 @@ export default class StickyHaeddingsPlugin extends Plugin {
             this.updateHeadings([id]);
           }
         }
-      }),
+      })
     );
     this.registerEvent(
       this.app.workspace.on('layout-change', () => {
         this.checkFileResolveMap();
         this.updateHeadings(Object.keys(this.fileResolveMap));
-      }),
+      })
     );
     this.registerEvent(
-      this.app.workspace.on('window-open', workspaceWindow => {
-        this.registerDomEvent(workspaceWindow.doc, 'scroll', this.detectPosition, true);
-      }),
+      this.app.workspace.on('window-open', (workspaceWindow) => {
+        this.registerDomEvent(
+          workspaceWindow.doc,
+          'scroll',
+          this.detectPosition,
+          true
+        );
+      })
     );
     this.registerEvent(
       this.app.workspace.on('editor-change', (editor, info) => {
         const { file } = info;
         if (file && isMarkdownFile(file)) {
-          Object.values(this.fileResolveMap).forEach(item => {
+          Object.values(this.fileResolveMap).forEach((item) => {
             if (item.file.path === file.path) {
               item.resolve = false;
             }
           });
         }
-      }),
+      })
     );
     this.registerEvent(
-      this.app.metadataCache.on('resolve', file => {
+      this.app.metadataCache.on('resolve', (file) => {
         if (isMarkdownFile(file)) {
           const ids: string[] = [];
-          Object.keys(this.fileResolveMap).forEach(id => {
+          Object.keys(this.fileResolveMap).forEach((id) => {
             const item = this.fileResolveMap[id];
             if (item.file.path === file.path && !item.resolve) {
               item.resolve = true;
@@ -112,7 +120,7 @@ export default class StickyHaeddingsPlugin extends Plugin {
             this.updateHeadings(ids);
           }
         }
-      }),
+      })
     );
     this.registerDomEvent(document, 'scroll', this.detectPosition, true);
     // eslint-disable-next-line @typescript-eslint/no-use-before-define
@@ -121,25 +129,23 @@ export default class StickyHaeddingsPlugin extends Plugin {
 
   checkFileResolveMap() {
     const validIds: string[] = [];
-    this.app.workspace.iterateAllLeaves(
-      leaf => {
-        if (leaf.id && leaf.view instanceof MarkdownView) {
-          validIds.push(leaf.id);
-          if (!(leaf.id in this.fileResolveMap)) {
-            const file = leaf.view.getFile();
-            if (file) {
-              this.fileResolveMap[leaf.id] = {
-                resolve: true,
-                file,
-                container: leaf.view.contentEl,
-                view: leaf.view,
-              };
-            }
+    this.app.workspace.iterateAllLeaves((leaf) => {
+      if (leaf.id && leaf.view instanceof MarkdownView) {
+        validIds.push(leaf.id);
+        if (!(leaf.id in this.fileResolveMap)) {
+          const file = leaf.view.getFile();
+          if (file) {
+            this.fileResolveMap[leaf.id] = {
+              resolve: true,
+              file,
+              container: leaf.view.contentEl,
+              view: leaf.view,
+            };
           }
         }
-      },
-    );
-    Object.keys(this.fileResolveMap).forEach(id => {
+      }
+    });
+    Object.keys(this.fileResolveMap).forEach((id) => {
       if (!validIds.includes(id)) {
         // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
         delete this.fileResolveMap[id];
@@ -158,7 +164,7 @@ export default class StickyHaeddingsPlugin extends Plugin {
   }
 
   updateHeadings(ids: string[]) {
-    ids.forEach(id => {
+    ids.forEach((id) => {
       const item = this.fileResolveMap[id];
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (item) {
@@ -175,25 +181,26 @@ export default class StickyHaeddingsPlugin extends Plugin {
     container: HTMLElement,
     scrollTop: number,
     view: MarkdownView,
-    id: string,
+    id: string
   ) {
     const validHeadings = headings.filter(
-      heading => heading.position.end.line + 1 <= scrollTop,
+      (heading) => heading.position.end.line + 1 <= scrollTop
     );
     let finalHeadings: HeadingCache[] = [];
     if (validHeadings.length) {
       trivial(validHeadings, finalHeadings, this.settings.mode);
     }
     let headingContainer = container.querySelector(
-      '.sticky-headings-container',
+      '.sticky-headings-container'
     );
     let lastHeight = 0;
     if (!headingContainer) {
       const headingRoot = createDiv({ cls: 'sticky-headings-root' });
-      headingContainer = headingRoot.createDiv({ cls: 'sticky-headings-container' });
+      headingContainer = headingRoot.createDiv({
+        cls: 'sticky-headings-container',
+      });
       container.prepend(headingRoot);
-    }
-    else {
+    } else {
       lastHeight = headingContainer.scrollHeight;
     }
     headingContainer.empty();
@@ -207,8 +214,7 @@ export default class StickyHaeddingsPlugin extends Plugin {
       let parsedText: string;
       if (cacheKey in this.markdownCache) {
         parsedText = this.markdownCache[cacheKey];
-      }
-      else {
+      } else {
         parsedText = await parseMarkdown(heading.heading, this.app);
         this.markdownCache[cacheKey] = parsedText;
       }
@@ -224,22 +230,33 @@ export default class StickyHaeddingsPlugin extends Plugin {
       // eslint-disable-next-line @typescript-eslint/no-loop-func
       headingItem.addEventListener('click', () => {
         // @ts-expect-error typing error
-        view.currentMode.applyScroll(heading.position.start.line, { highlight: true });
+        view.currentMode.applyScroll(heading.position.start.line, {
+          highlight: true,
+        });
         setTimeout(() => {
           // wait for headings tree rendered
           // @ts-expect-error typing error
-          view.currentMode.applyScroll(heading.position.start.line, { highlight: true });
+          view.currentMode.applyScroll(heading.position.start.line, {
+            highlight: true,
+          });
         }, 20);
       });
     }
     const newHeight = headingContainer.scrollHeight;
     const offset = newHeight - lastHeight;
     headingContainer.parentElement!.style.height = newHeight + 'px';
-    const contentElement = container.querySelectorAll<HTMLElement>('.markdown-source-view, .markdown-reading-view');
-    contentElement.forEach(item => {
-      const scroller = item.querySelector('.cm-scroller, .markdown-preview-view');
+    const contentElement = container.querySelectorAll<HTMLElement>(
+      '.markdown-source-view, .markdown-reading-view'
+    );
+    contentElement.forEach((item) => {
+      const scroller = item.querySelector(
+        '.cm-scroller, .markdown-preview-view'
+      );
       item.style.paddingTop = newHeight + 'px';
-      scroller?.scrollTo({ top: scroller.scrollTop + offset, behavior: 'instant' });
+      scroller?.scrollTo({
+        top: scroller.scrollTop + offset,
+        behavior: 'instant',
+      });
     });
   }
 
@@ -247,7 +264,10 @@ export default class StickyHaeddingsPlugin extends Plugin {
 
   async loadSettings() {
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-    this.settings = { ...defaultSetting, ...(await this.loadData() as ISetting) };
+    this.settings = {
+      ...defaultSetting,
+      ...((await this.loadData()) as ISetting),
+    };
   }
 
   async saveSettings() {
@@ -276,11 +296,11 @@ class StickyHeadingsSetting extends PluginSettingTab {
     new Setting(containerEl)
       .setName(L.setting.mode.title())
       .setDesc(L.setting.mode.description())
-      .addDropdown(dropdown => {
+      .addDropdown((dropdown) => {
         dropdown.addOption('default', L.setting.mode.default());
         dropdown.addOption('concise', L.setting.mode.concise());
         dropdown.setValue(this.plugin.settings.mode);
-        dropdown.onChange(value => {
+        dropdown.onChange((value) => {
           this.update({
             ...this.plugin.settings,
             // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
@@ -291,9 +311,9 @@ class StickyHeadingsSetting extends PluginSettingTab {
     new Setting(containerEl)
       .setName(L.setting.max.title())
       .setDesc(L.setting.max.description())
-      .addText(text => {
+      .addText((text) => {
         text.setValue(this.plugin.settings.max.toString());
-        text.onChange(value => {
+        text.onChange((value) => {
           this.update({
             ...this.plugin.settings,
             max: parseInt(value, 10) || 0,
