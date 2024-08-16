@@ -1,47 +1,43 @@
 {
-	"name": "obsidian-sticky-headings",
-	"version": "1.0.6",
-	"description": "Display headings tree during editing and preview to indicate the current position.",
-	"main": "main.js",
-	"scripts": {
-		"dev": "node esbuild.config.mjs",
-		"build": "node esbuild.config.mjs production",
-		"version": "node version-bump.mjs && git add manifest.json versions.json",
-		"typesafe-i18n": "typesafe-i18n",
-		"lint": "eslint ./"
-	},
-	"keywords": [
-		"obsidian",
-		"plugin",
-		"markdown"
-	],
-	"author": "Zhou Hua",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/zhouhua/obsidian-sticky-headings"
-	},
-	"bugs": {
-		"url": "https://github.com/zhouhua/obsidian-sticky-headings/issues"
-	},
-	"license": "MIT",
-	"devDependencies": {
-		"@eslint/js": "^9.6.0",
-		"@stylistic/eslint-plugin": "^2.3.0",
-		"@types/eslint__js": "^8.42.3",
-		"@types/lodash": "^4.17.6",
-		"@types/node": "^20.14.10",
-		"@typescript-eslint/eslint-plugin": "7.16.0",
-		"@typescript-eslint/parser": "7.16.0",
-		"builtin-modules": "3.3.0",
-		"esbuild": "0.23.0",
-		"eslint": "^9.6.0",
-		"obsidian": "latest",
-		"tslib": "2.6.3",
-		"typescript": "5.5.3",
-		"typescript-eslint": "^7.16.0"
-	},
-	"dependencies": {
-		"lodash": "^4.17.21",
-		"typesafe-i18n": "^5.26.2"
-	}
+  "name": "obsidian-sticky-headings",
+  "version": "1.0.6",
+  "description": "Display headings tree during editing and preview to indicate the current position.",
+  "main": "main.js",
+  "scripts": {
+    "dev": "node esbuild.config.mjs",
+    "build": "node esbuild.config.mjs production",
+    "version": "node version-bump.mjs && git add manifest.json versions.json",
+    "typesafe-i18n": "typesafe-i18n",
+    "lint": "eslint ./"
+  },
+  "keywords": [
+    "obsidian",
+    "plugin",
+    "markdown"
+  ],
+  "author": "Zhou Hua",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zhouhua/obsidian-sticky-headings"
+  },
+  "bugs": {
+    "url": "https://github.com/zhouhua/obsidian-sticky-headings/issues"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@eslint/js": "^9.6.0",
+    "@types/eslint__js": "^8.42.3",
+    "@types/lodash": "^4.17.6",
+    "@types/node": "^20.14.10",
+    "builtin-modules": "3.3.0",
+    "esbuild": "0.23.0",
+    "eslint": "^9.6.0",
+    "obsidian": "latest",
+    "tslib": "2.6.3",
+    "typescript": "5.5.3"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21",
+    "typesafe-i18n": "^5.26.2"
+  }
 }
