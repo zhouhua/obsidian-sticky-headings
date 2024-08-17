@@ -9,7 +9,6 @@
 
   onMount(() => {
     console.log('mounted svelte component');
-    console.log(getIcon(`heading-1`));
   });
 
   onDestroy(() => {

@@ -1,4 +1,4 @@
-import type { MarkdownView, TFile } from 'obsidian';
+import type { MarkdownView, TFile, Pos } from 'obsidian';
 
 export interface ISetting {
   max: number;

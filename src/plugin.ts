@@ -1,10 +1,11 @@
 import debounce from 'lodash/debounce';
-import type { Pos, TFile } from 'obsidian';
+import type { TFile } from 'obsidian';
 import { MarkdownView, Plugin, ItemView } from 'obsidian';
 import type { FileResolveEntry, Heading, ISetting } from './types';
 import StickyHeadingsSetting, { defaultSettings } from './settings';
 import {
   calcIndentLevels,
+  trivial,
   getHeadings,
   isMarkdownFile,
   parseMarkdown,
@@ -26,7 +27,10 @@ export default class StickyHeadingsPlugin extends Plugin {
 
     this.registerEvent(
       this.app.workspace.on('file-open', () => {
-        this.createStickyHeaderComponent();
+        // timeout to wait for cm.editor to load
+        setTimeout(() => {
+          this.checkFileResolveMap();
+        }, 100);
       })
     );
 
@@ -156,6 +160,7 @@ export default class StickyHeadingsPlugin extends Plugin {
       const headingsInView = item.headings.filter(
         (heading) => heading.offset.top < scrollTop
       );
+      // add settings max call
       item.headingEl.updateHeadings(headingsInView);
     }
   }
@@ -213,6 +218,7 @@ export default class StickyHeadingsPlugin extends Plugin {
   }
 
   async retrieveHeadings(file: TFile, view: MarkdownView): Promise<Heading[]> {
+    console.log('🚀 ~ view:', view);
     const headings = getHeadings(file, this.app);
 
     if (!headings || headings.length === 0) return [];
