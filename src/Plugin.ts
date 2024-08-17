@@ -192,9 +192,6 @@ export default class StickyHeadingsPlugin extends Plugin {
       });
       container.prepend(headingRoot);
     }
-    else {
-      lastHeight = headingContainer.scrollHeight;
-    }
     headingContainer.empty();
     const indentLevels: number[] = calcIndentLevels(finalHeadings);
     for (const [i, { heading, offset }] of finalHeadings.entries()) {
