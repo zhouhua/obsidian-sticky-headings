@@ -1,6 +1,7 @@
 import type StickyHeadingsPlugin from 'main';
 import { PluginSettingTab, App, Setting } from 'obsidian';
 import L from './localisation';
+import type { ISetting } from './typing';
 
 export const defaultSettings = {
   max: 0,
@@ -9,7 +10,6 @@ export const defaultSettings = {
 
 export default class StickyHeadingsSetting extends PluginSettingTab {
   plugin: StickyHeadingsPlugin;
-  render: (settings: ISetting) => void;
 
   constructor(app: App, plugin: StickyHeadingsPlugin) {
     super(app, plugin);
@@ -19,7 +19,6 @@ export default class StickyHeadingsSetting extends PluginSettingTab {
   update(data: ISetting) {
     this.plugin.settings = data;
     this.plugin.saveSettings();
-    this.plugin.rerenderAll();
   }
 
   display(): void {
