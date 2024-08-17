@@ -28,43 +28,6 @@ export function parseMarkdown(markdown: string, app: App): Promise<string> {
   );
 }
 
-export function trivial(
-  subHeadings: HeadingCache[],
-  result: HeadingCache[],
-  mode: 'default' | 'concise'
-) {
-  if (!subHeadings.length) {
-    return result;
-  }
-  const topLevel = subHeadings.reduce(
-    (res, cur) => Math.min(res, cur.level),
-    6
-  );
-  const indexesOfTopLevel = subHeadings.reduce<number[]>(
-    (indexes, cur, index) => {
-      if (cur.level === topLevel) {
-        indexes.push(index);
-      }
-      return indexes;
-    },
-    []
-  );
-  if (mode === 'concise') {
-    if (indexesOfTopLevel.length >= 1) {
-      result.push(subHeadings[indexesOfTopLevel[indexesOfTopLevel.length - 1]]);
-    }
-  } else {
-    for (const index of indexesOfTopLevel) {
-      result.push(subHeadings[index]);
-    }
-  }
-  trivial(
-    subHeadings.slice(indexesOfTopLevel[indexesOfTopLevel.length - 1] + 1),
-    result,
-    mode
-  );
-}
-
 function findLastFromindex<T = unknown>(
   list: T[],
   lastIndex: number,
@@ -80,14 +43,14 @@ function findLastFromindex<T = unknown>(
   return index;
 }
 
-export function calcIndentLevels(headings: HeadingCache[]): number[] {
+export function calcIndentLevels(headings: { heading: HeadingCache; offset: number; }[]): number[] {
   const result: number[] = [];
   if (!headings.length) {
     return result;
   }
   const topLevelIndex = headings.reduce<number>(
-    (res, cur, i) => (cur.level < headings[res].level ? i : res),
-    0
+    (res, cur, i) => (cur.heading.level < headings[res].heading.level ? i : res),
+    0,
   );
   result.push(
     ...calcIndentLevels(headings.slice(0, topLevelIndex)).map(
@@ -99,11 +62,7 @@ export function calcIndentLevels(headings: HeadingCache[]): number[] {
       result.push(0);
       return;
     }
-    const parentIndex = findLastFromindex(
-      list,
-      i - 1,
-      (item) => item.level < heading.level
-    );
+    const parentIndex = findLastFromindex(list, i - 1, item => item.heading.level < heading.heading.level);
     if (parentIndex === -1) {
       result.push(0);
     } else {

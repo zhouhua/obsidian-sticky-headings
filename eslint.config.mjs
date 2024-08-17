@@ -115,7 +115,7 @@ export default tseslint.config({
     '@typescript-eslint/no-unused-vars': ['error', { args: 'none' }],
     '@typescript-eslint/adjacent-overload-signatures': 'error',
     '@typescript-eslint/consistent-indexed-object-style': 'error',
-    '@typescript-eslint/consistent-type-assertions': ['error', { assertionStyle: 'never' }],
+    '@typescript-eslint/consistent-type-assertions': 'off',
     '@typescript-eslint/consistent-type-definitions': 'error',
     '@typescript-eslint/consistent-type-exports': ['error', { fixMixedExportsWithInlineTypeSpecifier: false }],
     '@typescript-eslint/consistent-type-imports': [
@@ -130,7 +130,7 @@ export default tseslint.config({
     '@typescript-eslint/no-confusing-non-null-assertion': 'error',
     '@typescript-eslint/no-confusing-void-expression': 'error',
     '@typescript-eslint/no-dupe-class-members': 'error',
-    '@typescript-eslint/no-dynamic-delete': 'error',
+    '@typescript-eslint/no-dynamic-delete': 'off',
     '@typescript-eslint/no-empty-interface': 'error',
     '@typescript-eslint/no-empty-object-type': 'error',
     '@typescript-eslint/no-invalid-void-type': 'error',

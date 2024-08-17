@@ -35,6 +35,7 @@ settings:
 	font-size: 12px;
 	margin: 0 auto;
 	max-width: var(--file-line-width);
+	background-color: var(--background-primary);
 }
 
 .sticky-headings-item {

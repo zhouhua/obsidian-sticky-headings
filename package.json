@@ -25,6 +25,7 @@
   },
   "license": "MIT",
   "devDependencies": {
+		"@codemirror/view": "^6.32.0",
     "@eslint/js": "^9.6.0",
     "@types/eslint__js": "^8.42.3",
     "@types/lodash": "^4.17.6",
@@ -33,6 +34,7 @@
     "esbuild": "0.23.0",
     "eslint": "^9.6.0",
     "obsidian": "latest",
+		"obsidian-typings": "^2.2.0",
     "tslib": "2.6.3",
     "typescript": "5.5.3"
   },
