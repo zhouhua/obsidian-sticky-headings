@@ -1,15 +1,7 @@
-import StickyHeader from './components/StickyHeader.svelte';
-import {
-  MarkdownView,
-  Plugin,
-  PluginSettingTab,
-  setIcon,
-  Setting,
-  ItemView,
-  View,
-} from 'obsidian';
+import StickyHeader from './ui/StickyHeader.svelte';
+import { ItemView } from 'obsidian';
 
-import { headings, editMode } from './components/store';
+import { headings, editMode } from './ui/store';
 
 export default class StickyHeaderComponent {
   stickyHeaderComponent: StickyHeader | null = null;

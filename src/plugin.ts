@@ -1,12 +1,6 @@
 import debounce from 'lodash/debounce';
 import type { HeadingCache, TFile } from 'obsidian';
-import {
-  MarkdownView,
-  Plugin,
-  setIcon,
-  ItemView,
-  MarkdownRenderer,
-} from 'obsidian';
+import { MarkdownView, Plugin, ItemView } from 'obsidian';
 import type { ISetting } from './typing';
 import StickyHeadingsSetting, { defaultSettings } from './settings';
 import {
@@ -18,7 +12,7 @@ import {
 } from './utils';
 
 import StickyHeaderComponent from './stickyHeader';
-import { headings, editMode } from './components/store';
+import { headings, editMode } from './ui/store';
 
 export default class StickyHeadingsPlugin extends Plugin {
   settings: ISetting = defaultSettings;
