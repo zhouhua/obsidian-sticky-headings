@@ -21,12 +21,18 @@ export function parseMarkdown(markdown: string, app: App): Promise<string> {
     return Promise.resolve(markdown); // Return the original markdown if rendering is not possible
   }
 
-  return MarkdownRenderer.render(app, markdown, div, '', activeView).then(() => {
-    return div.innerText;
-  });
+  return MarkdownRenderer.render(app, markdown, div, '', activeView).then(
+    () => {
+      return div.innerText;
+    }
+  );
 }
 
-function findLastFromindex<T = unknown>(list: T[], lastIndex: number, check: (item: T) => boolean): number {
+function findLastFromindex<T = unknown>(
+  list: T[],
+  lastIndex: number,
+  check: (item: T) => boolean
+): number {
   let index = -1;
   for (let i = lastIndex; i >= 0; i--) {
     if (check(list[i])) {
@@ -46,7 +52,11 @@ export function calcIndentLevels(headings: { heading: HeadingCache; offset: numb
     (res, cur, i) => (cur.heading.level < headings[res].heading.level ? i : res),
     0,
   );
-  result.push(...calcIndentLevels(headings.slice(0, topLevelIndex)).map(level => level + 1));
+  result.push(
+    ...calcIndentLevels(headings.slice(0, topLevelIndex)).map(
+      (level) => level + 1
+    )
+  );
   headings.slice(topLevelIndex).forEach((heading, i, list) => {
     if (i === 0) {
       result.push(0);
@@ -55,8 +65,7 @@ export function calcIndentLevels(headings: { heading: HeadingCache; offset: numb
     const parentIndex = findLastFromindex(list, i - 1, item => item.heading.level < heading.heading.level);
     if (parentIndex === -1) {
       result.push(0);
-    }
-    else {
+    } else {
       result.push(result[parentIndex + topLevelIndex] + 1);
     }
   });
