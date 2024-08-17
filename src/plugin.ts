@@ -1,5 +1,5 @@
 import debounce from 'lodash/debounce';
-import type { HeadingCache, TFile } from 'obsidian';
+import type { EventRef, HeadingCache, Pos, TFile } from 'obsidian';
 import { MarkdownView, Plugin, ItemView } from 'obsidian';
 import type { ISetting } from './typing';
 import StickyHeadingsSetting, { defaultSettings } from './settings';
@@ -12,7 +12,15 @@ import {
 } from './utils';
 
 import StickyHeaderComponent from './stickyHeader';
-import { headings, editMode } from './ui/store';
+import { stickyHeadings, editMode } from './ui/store';
+
+export interface Heading {
+  heading: string;
+  title: string;
+  level: number;
+  position: Pos;
+  offset: any;
+}
 
 export default class StickyHeadingsPlugin extends Plugin {
   settings: ISetting = defaultSettings;
@@ -24,25 +32,22 @@ export default class StickyHeadingsPlugin extends Plugin {
       file: TFile;
       view: MarkdownView;
       container: HTMLElement;
+      headings: Heading[];
       headingEl: StickyHeaderComponent | undefined;
+      layoutChangeEvent: EventRef;
+      scrollListener?: ((event: Event) => void) | null;
     }
   > = new Map();
 
   markdownCache: Record<string, string> = {};
 
   detectPosition = debounce(
-    (event: Event) => {
+    (event: Event, scroller, headings: Heading[]) => {
       const target = event.target as HTMLElement | null;
-      const scroller =
-        target?.classList.contains('cm-scroller') ||
-        target?.classList.contains('markdown-preview-view');
       if (scroller) {
         const container = target?.closest('.view-content');
         if (container) {
-          const ids = Array.from(this.fileResolveMap.entries())
-            .filter(([, value]) => value.container === container)
-            .map(([id]) => id);
-          // this.updateHeadings(ids);
+          this.setHeadingsInView(scroller.scrollTop, headings);
         }
       }
     },
@@ -50,26 +55,19 @@ export default class StickyHeadingsPlugin extends Plugin {
     { leading: true, trailing: true }
   );
 
+  setHeadingsInView(scrollTop: number, headings: Heading[]) {
+    const headingsInView = headings.filter(
+      (heading) => heading.offset.top < scrollTop
+    );
+    stickyHeadings.set(headingsInView);
+  }
+
   async onload() {
     await this.loadSettings();
 
-    const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
-    if (activeView) {
-      this.createStickyHeaderComponent(activeView);
-    }
-
     this.registerEvent(
-      this.app.workspace.on('layout-change', this.handleLayoutChange.bind(this))
-    );
-
-    this.registerEvent(
-      this.app.workspace.on('window-open', (workspaceWindow) => {
-        this.registerDomEvent(
-          workspaceWindow.doc,
-          'scroll',
-          this.detectPosition,
-          true
-        );
+      this.app.workspace.on('file-open', () => {
+        this.checkFileResolveMap();
       })
     );
 
@@ -83,32 +81,87 @@ export default class StickyHeadingsPlugin extends Plugin {
       this.app.metadataCache.on('resolve', (file) => this.handleResolve(file))
     );
 
-    this.registerDomEvent(document, 'scroll', this.detectPosition, true);
+    this.checkFileResolveMap();
+
     this.addSettingTab(new StickyHeadingsSetting(this.app, this));
   }
 
-  createStickyHeaderComponent(view: MarkdownView) {
-    const id = view.leaf.id;
-    if (id && !this.fileResolveMap.has(id)) {
-      const file = view.getFile();
-      if (file) {
-        const headingEl = new StickyHeaderComponent(view as ItemView);
-        this.fileResolveMap.set(id, {
-          resolve: true,
-          file,
-          container: view.contentEl,
-          view,
-          headingEl,
-        });
-        this.checkFileResolveMap();
+  async createStickyHeaderComponent() {
+    const view = this.app.workspace.getActiveViewOfType(MarkdownView);
+    if (view) {
+      const id = view.leaf.id;
+      if (id && !this.fileResolveMap.has(id)) {
+        const file = view.getFile();
+        if (file && isMarkdownFile(file)) {
+          const headings = await this.retrieveHeadings(file, view);
+          // console.log('🚀 ~ headings:', headings);
+          const headingEl = new StickyHeaderComponent(view as ItemView);
+
+          const layoutChangeEvent = this.app.workspace.on(
+            'layout-change',
+            this.handleLayoutChange.bind(this, view, headings)
+          );
+
+          this.fileResolveMap.set(id, {
+            resolve: true,
+            file,
+            container: view.contentEl,
+            view,
+            headings,
+            headingEl,
+            layoutChangeEvent,
+          });
+
+          this.registerEvent(layoutChangeEvent);
+
+          this.checkFileResolveMap();
+        }
       }
     }
   }
 
-  handleLayoutChange() {
+  handleLayoutChange(view: MarkdownView, headings: Heading[]) {
     const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
-    if (activeView) editMode.set(activeView.editMode.sourceMode);
-    this.checkFileResolveMap();
+    if (activeView) {
+      editMode.set(activeView.editMode.sourceMode);
+
+      const { type } = view.currentMode;
+      const scroller =
+        type === 'source'
+          ? view.editor.cm.scrollDOM
+          : view.previewMode.renderer.previewEl;
+
+      const id = view.leaf.id;
+      if (id) {
+        const item = this.fileResolveMap.get(id);
+        if (item) {
+          // Remove existing scroll listener if it exists
+          if (item.scrollListener && item.view?.contentEl) {
+            item.view.contentEl.removeEventListener(
+              'scroll',
+              item.scrollListener,
+              true
+            );
+          }
+
+          if (scroller) {
+            this.setHeadingsInView(scroller?.scrollTop, headings);
+            // Create new scroll listener
+            const newScrollListener = (event: Event) =>
+              this.detectPosition(event, scroller, headings);
+            view.contentEl.addEventListener('scroll', newScrollListener, true);
+
+            // Update the fileResolveMap with the new scroll listener
+            item.scrollListener = newScrollListener;
+            this.fileResolveMap.set(id, item);
+          } else {
+            // If there's no scroller, ensure we remove any existing listener
+            item.scrollListener = null;
+            this.fileResolveMap.set(id, item);
+          }
+        }
+      }
+    }
   }
 
   handleEditorChange(file: TFile | null) {
@@ -140,11 +193,12 @@ export default class StickyHeadingsPlugin extends Plugin {
     const validIds = new Set<string>();
     this.app.workspace.iterateAllLeaves((leaf) => {
       if (leaf.view instanceof MarkdownView) {
+        console.log('🚀 ~ leaf:', leaf);
         const id = leaf.id;
         if (id) {
           validIds.add(id);
           if (!this.fileResolveMap.has(id)) {
-            this.createStickyHeaderComponent(leaf.view as MarkdownView);
+            this.createStickyHeaderComponent();
           }
         }
       }
@@ -160,106 +214,38 @@ export default class StickyHeadingsPlugin extends Plugin {
     });
   }
 
-  updateHeadings(ids: string[]) {
-    ids.forEach((id) => {
-      const item = this.fileResolveMap.get(id);
-      if (item) {
-        const { file, view, container } = item;
-        const headings = getHeadings(file, this.app);
-        const scrollTop = view.currentMode.getScroll();
-        this.renderHeadings(headings, container, scrollTop, view, id);
-      }
-    });
-  }
+  async retrieveHeadings(file: TFile, view: MarkdownView): Promise<Heading[]> {
+    const headings = getHeadings(file, this.app);
 
-  async renderHeadings(
-    headings: HeadingCache[] = [],
-    container: HTMLElement,
-    scrollTop: number,
-    view: MarkdownView,
-    id: string
-  ) {
-    const validHeadings = headings.filter(
-      (heading) => heading.position.end.line + 1 <= scrollTop
+    if (!headings) return;
+
+    return await Promise.all(
+      headings.map(async (heading) => ({
+        ...heading,
+        title: await parseMarkdown(heading.heading, this.app),
+        offset: view.editor.cm.lineBlockAt(heading.position.start.offset),
+      }))
     );
-    let finalHeadings: HeadingCache[] = [];
-    if (validHeadings.length) {
-      trivial(validHeadings, finalHeadings, this.settings.mode);
-    }
-    let headingContainer = container.querySelector(
-      '.sticky-headings-container'
-    );
-    let lastHeight = 0;
-    if (!headingContainer) {
-      const headingRoot = createDiv({ cls: 'sticky-headings-root' });
-      headingContainer = headingRoot.createDiv({
-        cls: 'sticky-headings-container',
-      });
-      container.prepend(headingRoot);
-    } else {
-      lastHeight = headingContainer.scrollHeight;
-    }
-    headingContainer.empty();
-    if (this.settings.max) {
-      finalHeadings = finalHeadings.slice(-this.settings.max);
-    }
-    const indentLevels: number[] = calcIndentLevels(finalHeadings);
-    for (const [i, heading] of finalHeadings.entries()) {
-      // const cls = `sticky-headings-item sticky-headings-level-${heading.level}`;
-      const cacheKey = heading.heading;
-      let parsedText: string;
-      if (cacheKey in this.markdownCache) {
-        parsedText = this.markdownCache[cacheKey];
-      } else {
-        parsedText = await parseMarkdown(heading.heading, this.app);
-        this.markdownCache[cacheKey] = parsedText;
-      }
-      // const headingItem = createDiv({
-      //   cls,
-      //   text: parsedText,
-      // });
-      // const icon = createDiv({ cls: 'sticky-headings-icon' });
-      // setIcon(icon, `heading-${heading.level}`);
-      // headingItem.prepend(icon);
-      // headingItem.setAttribute('data-indent-level', `${indentLevels[i]}`);
-      // headingContainer.append(headingItem);
-      // eslint-disable-next-line @typescript-eslint/no-loop-func
-      // headingItem.addEventListener('click', () => {
-      //   // @ts-expect-error typing error
-      //   view.currentMode.applyScroll(heading.position.start.line, {
-      //     highlight: true,
-      //   });
-      //   setTimeout(() => {
-      //     // wait for headings tree rendered
-      //     // @ts-expect-error typing error
-      //     view.currentMode.applyScroll(heading.position.start.line, {
-      //       highlight: true,
-      //     });
-      //   }, 20);
-      // });
-    }
-    // const newHeight = headingContainer.scrollHeight;
-    // const offset = newHeight - lastHeight;
-    // headingContainer.parentElement!.style.height = newHeight + 'px';
-    // const contentElement = container.querySelectorAll<HTMLElement>(
-    //   '.markdown-source-view, .markdown-reading-view'
-    // );
-    // contentElement.forEach((item) => {
-    //   const scroller = item.querySelector(
-    //     '.cm-scroller, .markdown-preview-view'
-    //   );
-    //   item.style.paddingTop = newHeight + 'px';
-    //   scroller?.scrollTo({
-    //     top: scroller.scrollTop + offset,
-    //     behavior: 'instant',
-    //   });
-    // });
   }
 
   onunload() {
-    this.fileResolveMap.forEach((item) => {
+    this.fileResolveMap.forEach((item, id) => {
       item.headingEl?.removeStickyHeader();
+
+      if (item.layoutChangeEvent) {
+        this.app.workspace.offref(item.layoutChangeEvent);
+      }
+
+      if (item.scrollListener && item.view?.contentEl) {
+        item.view.contentEl.removeEventListener(
+          'scroll',
+          item.scrollListener,
+          true
+        );
+      }
     });
+
+    this.fileResolveMap.clear();
   }
 
   async loadSettings() {

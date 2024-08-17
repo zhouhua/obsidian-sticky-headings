@@ -1,7 +1,9 @@
 <script lang="ts">
-  import { headings, editMode } from './store';
+  import type { Heading } from 'src/plugin';
+  import { stickyHeadings, editMode } from './store';
   import { onDestroy, onMount } from 'svelte';
   export let icons: boolean;
+  // export let headings: Heading[];
 
   onMount(() => {
     console.log('mounted svelte component');
@@ -20,13 +22,15 @@
 
 <div class="sticky-headings-root">
   <div class="sticky-headings-container">
-    {#each $headings as heading}
-      <div class="sticky-headings-icon"></div>
-      <div class="sticky-headings-item">
-        {#if isSourceView}#####{/if}
-        {heading}
-      </div>
-    {/each}
+    {#key $stickyHeadings}
+      {#each $stickyHeadings as heading}
+        <!-- <div class="sticky-headings-icon"></div> -->
+        <div class="sticky-headings-item">
+          {#if isSourceView}#####{/if}
+          {heading.title}
+        </div>
+      {/each}
+    {/key}
   </div>
 </div>
 
@@ -59,7 +63,7 @@
   .sticky-headings-container {
     max-width: var(--file-line-width);
     margin: 0 auto;
-    background-color: green;
+    background-color: blue;
   }
 
   .sticky-headings-root {

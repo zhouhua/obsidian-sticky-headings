@@ -15,4 +15,18 @@ declare module 'obsidian' {
       sourceMode: boolean;
     };
   }
+  interface MarkdownSubView {
+    type: 'source' | 'preview';
+  }
+  interface Editor {
+    cm: {
+      scrollDOM: HTMLElement;
+      lineBlockAt: (Pos) => {};
+    };
+  }
+  interface MarkdownPreviewView {
+    renderer: {
+      previewEl: HTMLElement;
+    };
+  }
 }

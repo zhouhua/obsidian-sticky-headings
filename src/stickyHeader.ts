@@ -19,7 +19,6 @@ export default class StickyHeaderComponent {
           icons: true,
         },
       });
-      headings.set(['heading 1', 'next heading', 'heading 3']);
     }
   }
 
