@@ -1,10 +1,10 @@
+import { editMode } from './ui/store';
 import StickyHeader from './ui/StickyHeader.svelte';
 import { ItemView } from 'obsidian';
-
-import { headings, editMode } from './ui/store';
+import type { Heading } from './plugin';
 
 export default class StickyHeaderComponent {
-  stickyHeaderComponent: StickyHeader | null = null;
+  stickyHeaderComponent!: StickyHeader;
 
   constructor(view: ItemView) {
     this.addStickyHeader(view);
@@ -17,6 +17,9 @@ export default class StickyHeaderComponent {
         target: contentEl,
         props: {
           icons: true,
+          headings: [],
+          editMode: false,
+          view,
         },
       });
     }
@@ -25,7 +28,18 @@ export default class StickyHeaderComponent {
   removeStickyHeader() {
     if (this.stickyHeaderComponent) {
       this.stickyHeaderComponent?.$destroy();
-      this.stickyHeaderComponent = null;
+    }
+  }
+
+  updateHeadings(headings: Heading[]) {
+    if (this.stickyHeaderComponent) {
+      this.stickyHeaderComponent.$set({ headings });
+    }
+  }
+
+  updateEditMode(editMode: boolean) {
+    if (this.stickyHeaderComponent) {
+      this.stickyHeaderComponent.$set({ editMode });
     }
   }
 }

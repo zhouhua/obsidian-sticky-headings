@@ -1,9 +1,12 @@
 <script lang="ts">
+  import type { ItemView, MarkdownView } from 'obsidian';
   import type { Heading } from 'src/plugin';
-  import { stickyHeadings, editMode } from './store';
   import { onDestroy, onMount } from 'svelte';
-  export let icons: boolean;
-  // export let headings: Heading[];
+  // export let icons: boolean;
+  export let headings: Heading[];
+  export let editMode: boolean;
+  export let view: ItemView;
+  let main;
 
   onMount(() => {
     console.log('mounted svelte component');
@@ -13,20 +16,43 @@
     console.log('destroyed');
   });
 
-  let isSourceView = false;
-  editMode.subscribe((value) => {
-    console.log('🚀 ~ value:', value);
-    isSourceView = value;
-  });
+  const scrollerSource = view.editor.cm.scrollDOM;
+  const scrollerPreview = view.previewMode.renderer.previewEl;
 </script>
 
-<div class="sticky-headings-root">
+<div class="sticky-headings-root" bind:this={main}>
   <div class="sticky-headings-container">
-    {#key $stickyHeadings}
-      {#each $stickyHeadings as heading}
+    {#key headings}
+      {#each headings as heading, i}
         <!-- <div class="sticky-headings-icon"></div> -->
-        <div class="sticky-headings-item">
-          {#if isSourceView}#####{/if}
+        <div
+          class="sticky-headings-item"
+          data-indent-level={i}
+          on:click={() => {
+            // calculate height of header at clicked location before scrolling
+            const top = heading.offset.top - main.clientHeight;
+            try {
+              scrollerSource.scrollTo({
+                top,
+                behavior: 'instant',
+              });
+            } catch (e) {}
+            try {
+              scrollerPreview.scrollTo({
+                top,
+                behavior: 'instant',
+              });
+            } catch (e) {}
+          }}
+          role="button"
+          tabindex="0"
+          on:keydown={(e) => e.key === 'Enter' && scrollTo(heading.offset.top)}
+        >
+          {#if editMode}
+            {#each { length: heading.level } as _, i}
+              #
+            {/each}
+          {/if}
           {heading.title}
         </div>
       {/each}
@@ -35,25 +61,6 @@
 </div>
 
 <style>
-  /* @settings
-
-  name: Sticky Headings
-  id: sticky-headings
-  settings:
-      -
-          id: indent-width
-          title: Indent width
-          description: The indentation width in em units
-          type: variable-number
-          default: 1
-          format: rem
-
-  */
-
-  :root {
-    --indent-width: 1em;
-  }
-
   .sticky-headings-root {
     position: absolute;
     top: 0;
@@ -63,7 +70,7 @@
   .sticky-headings-container {
     max-width: var(--file-line-width);
     margin: 0 auto;
-    background-color: blue;
+    background-color: var(--background-primary);
   }
 
   .sticky-headings-root {
@@ -97,7 +104,7 @@
     height: 16px;
     margin-right: 8px;
     color: var(--link-color);
-  }
+  } */
 
   .sticky-headings-item[data-indent-level='1'] {
     padding-left: var(--indent-width);
@@ -121,5 +128,5 @@
 
   .sticky-headings-item:last-of-type {
     padding-bottom: 5px;
-  } */
+  }
 </style>
