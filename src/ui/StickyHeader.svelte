@@ -16,6 +16,8 @@
     console.log('destroyed');
   });
 
+  $: console.log(headings);
+
   const scrollerSource = view.editor.cm.scrollDOM;
   const scrollerPreview = view.previewMode.renderer.previewEl;
 </script>
@@ -32,8 +34,12 @@
             // calculate height of header at clicked location before scrolling
             const top = heading.offset.top - main.clientHeight;
             try {
+              const offset =
+                view.editMode.containerEl.querySelector('.cm-contentContainer')
+                  .offsetTop || 0;
+              console.log(top + offset, top, offset);
               scrollerSource.scrollTo({
-                top,
+                top: top + offset,
                 behavior: 'instant',
               });
             } catch (e) {}
