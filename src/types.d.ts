@@ -6,12 +6,26 @@ export interface ISetting {
   scrollBehaviour: ScrollBehavior;
 }
 
-export interface IFileResolve {
+export interface FileResolveEntry {
   resolve: boolean;
   file: TFile;
   view: MarkdownView;
   container: HTMLElement;
+  headings: Heading[];
+  headingEl: StickyHeaderComponent;
+  layoutChangeEvent: EventRef;
+  scrollListener?: ((event: Event) => void) | null;
+  editMode: boolean;
 }
+
+export interface Heading {
+  heading: string;
+  title: string;
+  level: number;
+  position: Pos;
+  offset: any;
+}
+
 declare module 'obsidian' {
   interface WorkspaceLeaf {
     id: string;
@@ -20,6 +34,9 @@ declare module 'obsidian' {
     getFile: () => TFile;
     editMode: {
       sourceMode: boolean;
+      containerEl: {
+        querySelector: (string) => HTMLElement;
+      };
     };
   }
   interface MarkdownSubView {
@@ -37,4 +54,3 @@ declare module 'obsidian' {
     };
   }
 }
-

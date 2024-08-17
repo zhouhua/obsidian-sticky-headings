@@ -1,22 +1,20 @@
 <script lang="ts">
-  import type { ItemView, MarkdownView } from 'obsidian';
-  import type { Heading } from 'src/plugin';
+  import { getIcon, MarkdownView } from 'obsidian';
+  import type { Heading } from '../types';
   import { onDestroy, onMount } from 'svelte';
-  // export let icons: boolean;
   export let headings: Heading[];
   export let editMode: boolean;
-  export let view: ItemView;
-  let main;
+  export let view: MarkdownView;
+  let main: HTMLElement;
 
   onMount(() => {
     console.log('mounted svelte component');
+    console.log(getIcon(`heading-1`));
   });
 
   onDestroy(() => {
     console.log('destroyed');
   });
-
-  $: console.log(headings);
 
   const scrollerSource = view.editor.cm.scrollDOM;
   const scrollerPreview = view.previewMode.renderer.previewEl;
@@ -26,7 +24,6 @@
   <div class="sticky-headings-container">
     {#key headings}
       {#each headings as heading, i}
-        <!-- <div class="sticky-headings-icon"></div> -->
         <div
           class="sticky-headings-item"
           data-indent-level={i}
@@ -36,8 +33,7 @@
             try {
               const offset =
                 view.editMode.containerEl.querySelector('.cm-contentContainer')
-                  .offsetTop || 0;
-              console.log(top + offset, top, offset);
+                  ?.offsetTop || 0;
               scrollerSource.scrollTo({
                 top: top + offset,
                 behavior: 'instant',
@@ -58,6 +54,10 @@
             {#each { length: heading.level } as _, i}
               #
             {/each}
+          {:else}
+            <div class="sticky-headings-icon">
+              {@html getIcon(`heading-${heading.level}`)?.outerHTML}
+            </div>
           {/if}
           {heading.title}
         </div>
@@ -105,12 +105,12 @@
     cursor: var(--cursor-link);
   }
 
-  /* .sticky-headings-item svg {
+  .sticky-headings-icon :global(svg) {
     width: 16px;
     height: 16px;
     margin-right: 8px;
     color: var(--link-color);
-  } */
+  }
 
   .sticky-headings-item[data-indent-level='1'] {
     padding-left: var(--indent-width);

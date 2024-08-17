@@ -1,7 +1,7 @@
 import debounce from 'lodash/debounce';
-import type { EventRef, HeadingCache, Pos, TFile } from 'obsidian';
+import type { Pos, TFile } from 'obsidian';
 import { MarkdownView, Plugin, ItemView } from 'obsidian';
-import type { ISetting } from './types';
+import type { FileResolveEntry, Heading, ISetting } from './types';
 import StickyHeadingsSetting, { defaultSettings } from './settings';
 import {
   calcIndentLevels,
@@ -11,27 +11,6 @@ import {
 } from './utils';
 
 import StickyHeaderComponent from './stickyHeader';
-import { stickyHeadings, editMode } from './ui/store';
-
-export interface Heading {
-  heading: string;
-  title: string;
-  level: number;
-  position: Pos;
-  offset: any;
-}
-
-type FileResolveEntry = {
-  resolve: boolean;
-  file: TFile;
-  view: MarkdownView;
-  container: HTMLElement;
-  headings: Heading[];
-  headingEl: StickyHeaderComponent;
-  layoutChangeEvent: EventRef;
-  scrollListener?: ((event: Event) => void) | null;
-  editMode: boolean;
-};
 
 type FileResolveMap = Map<string, FileResolveEntry>;
 
@@ -236,7 +215,7 @@ export default class StickyHeadingsPlugin extends Plugin {
   async retrieveHeadings(file: TFile, view: MarkdownView): Promise<Heading[]> {
     const headings = getHeadings(file, this.app);
 
-    if (!headings) return;
+    if (!headings || headings.length === 0) return [];
 
     return await Promise.all(
       headings.map(async (heading) => ({
