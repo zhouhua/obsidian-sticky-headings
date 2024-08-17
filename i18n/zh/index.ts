@@ -12,6 +12,13 @@ const zh: Translation = {
       title: '显示数量限制',
       description: '最大显示标题数量，0 表示不限制。',
     },
+    scrollBehaviour: {
+      title: '滚动效果',
+      description: '选择滚动效果',
+      auto: '自动',
+      smooth: '平滑滚动',
+      instant: '即时滚动',
+    },
   },
 };
 

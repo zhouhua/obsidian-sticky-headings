@@ -43,6 +43,28 @@ type RootTranslation = {
 			 */
 			description: string
 		}
+		scrollBehaviour: {
+			/**
+			 * S​c​r​o​l​l​ ​B​e​h​a​v​i​o​u​r
+			 */
+			title: string
+			/**
+			 * C​h​o​o​s​e​ ​b​e​t​w​e​e​n​ ​i​n​s​t​a​n​t​ ​o​r​ ​s​m​o​o​t​h​ ​s​c​r​o​l​l​i​n​g​ ​b​e​h​a​v​i​o​u​r
+			 */
+			description: string
+			/**
+			 * A​u​t​o
+			 */
+			auto: string
+			/**
+			 * S​m​o​o​t​h
+			 */
+			smooth: string
+			/**
+			 * I​n​s​t​a​n​t
+			 */
+			instant: string
+		}
 	}
 }
 
@@ -75,6 +97,28 @@ export type TranslationFunctions = {
 			 * Maximum number of headings that can be displayed. 0 indicates no limit.
 			 */
 			description: () => LocalizedString
+		}
+		scrollBehaviour: {
+			/**
+			 * Scroll Behaviour
+			 */
+			title: () => LocalizedString
+			/**
+			 * Choose between instant or smooth scrolling behaviour
+			 */
+			description: () => LocalizedString
+			/**
+			 * Auto
+			 */
+			auto: () => LocalizedString
+			/**
+			 * Smooth
+			 */
+			smooth: () => LocalizedString
+			/**
+			 * Instant
+			 */
+			instant: () => LocalizedString
 		}
 	}
 }

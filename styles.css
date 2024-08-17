@@ -14,9 +14,9 @@ settings:
 */
 
 :root {
-  --indent-width: 1em;
+	--indent-width: 1em;
 }
 
 .view-content {
-  position: relative;
+	position: relative;
 }

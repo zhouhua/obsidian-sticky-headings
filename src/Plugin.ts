@@ -1,14 +1,13 @@
 import debounce from 'lodash/debounce';
 import type { EventRef, HeadingCache, Pos, TFile } from 'obsidian';
 import { MarkdownView, Plugin, ItemView } from 'obsidian';
-import type { ISetting } from './typing';
+import type { ISetting } from './types';
 import StickyHeadingsSetting, { defaultSettings } from './settings';
 import {
   calcIndentLevels,
   getHeadings,
   isMarkdownFile,
   parseMarkdown,
-  trivial,
 } from './utils';
 
 import StickyHeaderComponent from './stickyHeader';
@@ -169,7 +168,7 @@ export default class StickyHeadingsPlugin extends Plugin {
         }
       }
     },
-    20,
+    50,
     { leading: true, trailing: true }
   );
 

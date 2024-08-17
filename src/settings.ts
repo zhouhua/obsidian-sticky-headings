@@ -1,11 +1,12 @@
 import type StickyHeadingsPlugin from 'main';
 import { PluginSettingTab, App, Setting } from 'obsidian';
 import L from './localisation';
-import type { ISetting } from './typing';
+import type { ISetting } from './types';
 
 export const defaultSettings = {
   max: 0,
   mode: 'default',
+  scrollBehaviour: 'auto',
 } satisfies ISetting;
 
 export default class StickyHeadingsSetting extends PluginSettingTab {
