@@ -2,13 +2,7 @@ import type { TFile } from 'obsidian';
 import { MarkdownView, Plugin } from 'obsidian';
 import type { FileResolveEntry, Heading, ISetting } from './types';
 import StickyHeadingsSetting, { defaultSettings } from './settings';
-import {
-  getHeadings,
-  getScroller,
-  isEditSourceMode,
-  isMarkdownFile,
-  parseMarkdown,
-} from './utils/obsidian';
+import { getHeadings, getScroller, isEditSourceMode, isMarkdownFile, parseMarkdown } from './utils/obsidian';
 
 import StickyHeaderComponent from './stickyHeader';
 import getShownHeadings, { trivial } from './utils/getShownHeadings';
@@ -35,9 +29,7 @@ export default class StickyHeadingsPlugin extends Plugin {
       })
     );
 
-    this.registerEvent(
-      this.app.metadataCache.on('resolve', (file) => this.handleResolve(file))
-    );
+    this.registerEvent(this.app.metadataCache.on('resolve', file => this.handleResolve(file)));
 
     this.checkFileResolveMap();
 
@@ -54,10 +46,7 @@ export default class StickyHeadingsPlugin extends Plugin {
           const headings = await this.retrieveHeadings(file, view);
           const headingEl = new StickyHeaderComponent(view);
 
-          const layoutChangeEvent = this.app.workspace.on(
-            'layout-change',
-            this.handleComponentUpdate.bind(this)
-          );
+          const layoutChangeEvent = this.app.workspace.on('layout-change', this.handleComponentUpdate.bind(this));
 
           this.fileResolveMap.set(id, {
             resolve: true,
@@ -78,11 +67,7 @@ export default class StickyHeadingsPlugin extends Plugin {
     }
   }
 
-  async updateHeadings(
-    file: TFile,
-    view: MarkdownView,
-    item: FileResolveEntry
-  ) {
+  async updateHeadings(file: TFile, view: MarkdownView, item: FileResolveEntry) {
     this.setHeadingsInView(getScroller(view), item);
     item.headingEl.updateHeadings(item.headings);
     return item.headings;
@@ -99,11 +84,7 @@ export default class StickyHeadingsPlugin extends Plugin {
         if (item) {
           // Remove existing scroll listener if it exists
           if (item.scrollListener && item.view?.contentEl) {
-            item.view.contentEl.removeEventListener(
-              'scroll',
-              item.scrollListener,
-              true
-            );
+            item.view.contentEl.removeEventListener('scroll', item.scrollListener, true);
           }
 
           item.editMode = isEditSourceMode(item.view);
@@ -112,13 +93,8 @@ export default class StickyHeadingsPlugin extends Plugin {
           if (scroller) {
             this.setHeadingsInView(scroller, item);
             // Create new scroll listener
-            const newScrollListener = (event: Event) =>
-              this.detectPosition(event, scroller, item);
-            item.view.contentEl.addEventListener(
-              'scroll',
-              newScrollListener,
-              true
-            );
+            const newScrollListener = (event: Event) => this.detectPosition(event, scroller, item);
+            item.view.contentEl.addEventListener('scroll', newScrollListener, true);
 
             // Update the fileResolveMap with the new scroll listener
             item.scrollListener = newScrollListener;
@@ -151,16 +127,11 @@ export default class StickyHeadingsPlugin extends Plugin {
     const scrollTop = scroller.scrollTop;
     // fixme: Use a more appropriate method to get the component height.
     const stuckHeaderHeight =
-      scroller
-        .closest('.view-content')
-        ?.querySelector<HTMLElement>('.sticky-headings-root')?.clientHeight ||
-      0;
+      scroller.closest('.view-content')?.querySelector<HTMLElement>('.sticky-headings-root')?.clientHeight || 0;
     if (item) {
       const headings = await this.retrieveHeadings(item.file, item.view);
       item.headings = headings;
-      const headingsInView = headings.filter(
-        (heading) => heading.offset < scrollTop + stuckHeaderHeight
-      );
+      const headingsInView = headings.filter(heading => heading.offset < scrollTop + stuckHeaderHeight);
       let findalHeadings: Heading[] = [];
       trivial(headingsInView, findalHeadings, this.settings.mode);
       if (this.settings.max) {
@@ -193,7 +164,7 @@ export default class StickyHeadingsPlugin extends Plugin {
 
   handleEditorChange(file: TFile | null) {
     if (file && isMarkdownFile(file)) {
-      this.fileResolveMap.forEach((item) => {
+      this.fileResolveMap.forEach(item => {
         if (item.file.path === file.path) {
           item.resolve = false;
         }
@@ -221,7 +192,7 @@ export default class StickyHeadingsPlugin extends Plugin {
 
   checkFileResolveMap() {
     const validIds = new Set<string>();
-    this.app.workspace.iterateAllLeaves(async (leaf) => {
+    this.app.workspace.iterateAllLeaves(async leaf => {
       if (leaf.view instanceof MarkdownView) {
         const id = leaf.id;
         if (id) {
@@ -267,11 +238,7 @@ export default class StickyHeadingsPlugin extends Plugin {
       }
 
       if (item.scrollListener && item.view?.contentEl) {
-        item.view.contentEl.removeEventListener(
-          'scroll',
-          item.scrollListener,
-          true
-        );
+        item.view.contentEl.removeEventListener('scroll', item.scrollListener, true);
       }
     });
 
