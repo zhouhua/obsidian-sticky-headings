@@ -2,7 +2,14 @@ import type { TFile } from 'obsidian';
 import { MarkdownView, Plugin } from 'obsidian';
 import type { FileResolveEntry, Heading, ISetting } from './types';
 import StickyHeadingsSetting, { defaultSettings } from './settings';
-import { getHeadings, getScroller, isEditSourceMode, isMarkdownFile, parseMarkdown } from './utils/obsidian';
+import {
+  getContainerEl,
+  getHeadings,
+  getScroller,
+  isEditSourceMode,
+  isMarkdownFile,
+  parseMarkdown,
+} from './utils/obsidian';
 
 import StickyHeaderComponent from './stickyHeader';
 import getShownHeadings, { trivial } from './utils/getShownHeadings';
@@ -77,7 +84,6 @@ export default class StickyHeadingsPlugin extends Plugin {
     const view = this.app.workspace.getActiveViewOfType(MarkdownView);
     if (view) {
       const scroller = getScroller(view);
-      console.log(scroller);
       const id = view.leaf.id;
       if (id) {
         const item = this.fileResolveMap.get(id);
@@ -125,9 +131,7 @@ export default class StickyHeadingsPlugin extends Plugin {
 
   async setHeadingsInView(scroller: HTMLElement, item: FileResolveEntry) {
     const scrollTop = scroller.scrollTop;
-    // fixme: Use a more appropriate method to get the component height.
-    const stuckHeaderHeight =
-      scroller.closest('.view-content')?.querySelector<HTMLElement>('.sticky-headings-root')?.clientHeight || 0;
+    const stuckHeaderHeight = getContainerEl(scroller)?.clientHeight || 0;
     if (item) {
       const headings = await this.retrieveHeadings(item.file, item.view);
       item.headings = headings;
