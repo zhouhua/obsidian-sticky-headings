@@ -88,7 +88,6 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    /* height: 18px; */
     cursor: var(--cursor-link);
   }
 
