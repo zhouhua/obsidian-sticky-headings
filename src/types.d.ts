@@ -1,4 +1,4 @@
-import type { MarkdownView, TFile, Pos } from 'obsidian';
+import type { MarkdownView, TFile, Pos, HeadingCache } from 'obsidian';
 
 export interface ISetting {
   max: number;
@@ -18,35 +18,14 @@ export interface FileResolveEntry {
   editMode: boolean;
 }
 
-export interface Heading {
-  heading: string;
+export interface Heading extends HeadingCache {
   title: string;
-  level: number;
-  position: Pos;
-  offset: any;
+  offset: number;
 }
 
 declare module 'obsidian' {
-  interface WorkspaceLeaf {
-    id: string;
-  }
-  interface MarkdownView {
-    getFile: () => TFile;
-    editMode: {
-      sourceMode: boolean;
-      containerEl: {
-        querySelector: (string) => HTMLElement;
-      };
-    };
-  }
   interface MarkdownSubView {
     type: 'source' | 'preview';
-  }
-  interface Editor {
-    cm: {
-      scrollDOM: HTMLElement;
-      lineBlockAt: (Pos) => {};
-    };
   }
   interface MarkdownPreviewView {
     renderer: {

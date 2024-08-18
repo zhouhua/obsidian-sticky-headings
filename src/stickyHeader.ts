@@ -1,24 +1,23 @@
-import { editMode } from './ui/store';
 import StickyHeader from './ui/StickyHeader.svelte';
-import { ItemView } from 'obsidian';
-import type { Heading } from './plugin';
+import { MarkdownView } from 'obsidian';
+import type { Heading } from './types';
 
 export default class StickyHeaderComponent {
   stickyHeaderComponent!: StickyHeader;
 
-  constructor(view: ItemView) {
+  constructor(view: MarkdownView) {
     this.addStickyHeader(view);
   }
 
-  addStickyHeader(view: ItemView) {
+  addStickyHeader(view: MarkdownView) {
     const { contentEl } = view;
     if (contentEl) {
       this.stickyHeaderComponent = new StickyHeader({
         target: contentEl,
         props: {
-          icons: true,
           headings: [],
           editMode: false,
+          indentList: [],
           view,
         },
       });
@@ -40,6 +39,12 @@ export default class StickyHeaderComponent {
   updateEditMode(editMode: boolean) {
     if (this.stickyHeaderComponent) {
       this.stickyHeaderComponent.$set({ editMode });
+    }
+  }
+
+  updateIndentList(indentList: number[]) {
+    if (this.stickyHeaderComponent) {
+      this.stickyHeaderComponent.$set({ indentList });
     }
   }
 }

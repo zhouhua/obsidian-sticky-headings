@@ -1,17 +1,19 @@
-import debounce from 'lodash/debounce';
 import type { TFile } from 'obsidian';
-import { MarkdownView, Plugin, ItemView } from 'obsidian';
+import { MarkdownView, Plugin } from 'obsidian';
 import type { FileResolveEntry, Heading, ISetting } from './types';
 import StickyHeadingsSetting, { defaultSettings } from './settings';
 import {
-  calcIndentLevels,
-  trivial,
   getHeadings,
+  getScroller,
+  isEditSourceMode,
   isMarkdownFile,
   parseMarkdown,
-} from './utils';
+} from './utils/obsidian';
 
 import StickyHeaderComponent from './stickyHeader';
+import getShownHeadings, { trivial } from './utils/getShownHeadings';
+import { throttle } from 'lodash';
+import { calcIndentLevels } from './utils/calcIndentLevels';
 
 type FileResolveMap = Map<string, FileResolveEntry>;
 
@@ -51,7 +53,7 @@ export default class StickyHeadingsPlugin extends Plugin {
         const file = view.getFile();
         if (file && isMarkdownFile(file)) {
           const headings = await this.retrieveHeadings(file, view);
-          const headingEl = new StickyHeaderComponent(view as ItemView);
+          const headingEl = new StickyHeaderComponent(view);
 
           const layoutChangeEvent = this.app.workspace.on(
             'layout-change',
@@ -66,7 +68,7 @@ export default class StickyHeadingsPlugin extends Plugin {
             headings,
             headingEl,
             layoutChangeEvent,
-            editMode: this.isEditSourceMode(view),
+            editMode: isEditSourceMode(view),
           });
 
           this.registerEvent(layoutChangeEvent);
@@ -82,25 +84,16 @@ export default class StickyHeadingsPlugin extends Plugin {
     view: MarkdownView,
     item: FileResolveEntry
   ) {
-    const headings = await this.retrieveHeadings(file, view);
-    item.headings = headings;
-    item.headingEl.updateHeadings(headings);
-    this.setHeadingsInView(view.editor.cm.scrollDOM.scrollTop, item);
-    return headings;
+    this.setHeadingsInView(getScroller(view), item);
+    item.headingEl.updateHeadings(item.headings);
+    return item.headings;
   }
-
-  isEditSourceMode = (view: MarkdownView) =>
-    view.editMode.sourceMode && view.currentMode.type !== 'preview';
 
   async handleComponentUpdate() {
     const view = this.app.workspace.getActiveViewOfType(MarkdownView);
     if (view) {
-      const { type } = view.currentMode;
-      const scroller =
-        type === 'source'
-          ? view.editor.cm.scrollDOM
-          : view.previewMode.renderer.previewEl;
-
+      const scroller = getScroller(view);
+      console.log(scroller);
       const id = view.leaf.id;
       if (id) {
         const item = this.fileResolveMap.get(id);
@@ -114,11 +107,11 @@ export default class StickyHeadingsPlugin extends Plugin {
             );
           }
 
-          item.editMode = this.isEditSourceMode(item.view);
-          item.headingEl.updateEditMode(this.isEditSourceMode(item.view));
+          item.editMode = isEditSourceMode(item.view);
+          item.headingEl.updateEditMode(isEditSourceMode(item.view));
 
           if (scroller) {
-            this.setHeadingsInView(scroller?.scrollTop, item);
+            this.setHeadingsInView(scroller, item);
             // Create new scroll listener
             const newScrollListener = (event: Event) =>
               this.detectPosition(event, scroller, item);
@@ -141,13 +134,13 @@ export default class StickyHeadingsPlugin extends Plugin {
     }
   }
 
-  detectPosition = debounce(
-    (event: Event, scroller, item) => {
+  detectPosition = throttle(
+    (event: Event, scroller: HTMLElement, item: FileResolveEntry) => {
       const target = event.target as HTMLElement | null;
       if (scroller) {
         const container = target?.closest('.view-content');
         if (container) {
-          this.setHeadingsInView(scroller.scrollTop, item);
+          this.setHeadingsInView(scroller, item);
         }
       }
     },
@@ -155,13 +148,25 @@ export default class StickyHeadingsPlugin extends Plugin {
     { leading: true, trailing: true }
   );
 
-  setHeadingsInView(scrollTop: number, item: FileResolveEntry) {
+  async setHeadingsInView(scroller: HTMLElement, item: FileResolveEntry) {
+    const scrollTop = scroller.scrollTop;
+    // fixme: Use a more appropriate method to get the component height.
+    const stickHeaderHeight = scroller.closest('.view-content')?.querySelector<HTMLElement>('.sticky-headings-root')?.clientHeight || 0;
     if (item) {
-      const headingsInView = item.headings.filter(
-        (heading) => heading.offset.top < scrollTop
+      const headings = await this.retrieveHeadings(item.file, item.view);
+      item.headings = headings;
+      const headingsInView = headings.filter(
+        (heading) => heading.offset < scrollTop + stickHeaderHeight
       );
+      let findalHeadings:Heading[] = [];
+      trivial(headingsInView, findalHeadings, this.settings.mode);
+      if(this.settings.max) {
+        findalHeadings = findalHeadings.slice(-this.settings.max);
+      }
+      const indentList = calcIndentLevels(findalHeadings);
       // add settings max call
-      item.headingEl.updateHeadings(headingsInView);
+      item.headingEl.updateHeadings(findalHeadings);
+      item.headingEl.updateIndentList(indentList);
     }
   }
 
@@ -224,11 +229,12 @@ export default class StickyHeadingsPlugin extends Plugin {
     if (!headings || headings.length === 0) return [];
 
     return await Promise.all(
-      headings.map(async (heading) => ({
-        ...heading,
-        title: await parseMarkdown(heading.heading, this.app),
-        offset: view.editor.cm.lineBlockAt(heading.position.start.offset),
-      }))
+      getShownHeadings(headings, view)
+        .map(async ({heading, offset}) => ({
+          ...heading,
+          title: await parseMarkdown(heading.heading, this.app),
+          offset,
+        }))
     );
   }
 

@@ -2,9 +2,11 @@
   import { getIcon, MarkdownView } from 'obsidian';
   import type { Heading } from '../types';
   import { onDestroy, onMount } from 'svelte';
+  import { getScroller } from 'src/utils/obsidian';
   export let headings: Heading[];
   export let editMode: boolean;
   export let view: MarkdownView;
+  export let indentList: number[];
   let main: HTMLElement;
 
   onMount(() => {
@@ -14,9 +16,6 @@
   onDestroy(() => {
     console.log('destroyed');
   });
-
-  const scrollerSource = view.editor.cm.scrollDOM;
-  const scrollerPreview = view.previewMode.renderer.previewEl;
 </script>
 
 <div class="sticky-headings-root" bind:this={main}>
@@ -25,29 +24,16 @@
       {#each headings as heading, i}
         <div
           class="sticky-headings-item"
-          data-indent-level={i}
+          data-indent-level={indentList[i]}
           on:click={() => {
+            const scrollerSource = getScroller(view);
             // calculate height of header at clicked location before scrolling
-            const top = heading.offset.top - main.clientHeight;
-            try {
-              const offset =
-                view.editMode.containerEl.querySelector('.cm-contentContainer')
-                  ?.offsetTop || 0;
-              scrollerSource.scrollTo({
-                top: top + offset,
-                behavior: 'instant',
-              });
-            } catch (e) {}
-            try {
-              scrollerPreview.scrollTo({
-                top,
-                behavior: 'instant',
-              });
-            } catch (e) {}
+            const top = heading.offset - main.clientHeight;
+            scrollerSource.scrollTo({ top, behavior: 'instant' });
           }}
           role="button"
           tabindex="0"
-          on:keydown={(e) => e.key === 'Enter' && scrollTo(heading.offset.top)}
+          on:keydown={(e) => e.key === 'Enter' && scrollTo({ top: heading.offset })}
         >
           {#if editMode}
             {#each { length: heading.level } as _, i}
@@ -97,11 +83,17 @@
   .sticky-headings-item {
     line-height: 18px;
     display: flex;
+    align-items: center;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     /* height: 18px; */
     cursor: var(--cursor-link);
+  }
+
+  .sticky-headings-icon {
+    display: flex;
+    align-items: center;
   }
 
   .sticky-headings-icon :global(svg) {

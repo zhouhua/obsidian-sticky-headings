@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-import type { Heading } from 'src/plugin';
+import type { Heading } from '../types';
 
 export const stickyHeadings = writable<Heading[]>([]);
 
