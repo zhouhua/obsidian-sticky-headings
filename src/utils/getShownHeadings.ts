@@ -2,7 +2,7 @@ import type { HeadingCache, MarkdownView } from 'obsidian';
 import type { Heading } from 'src/types';
 import { isEditMode } from './obsidian';
 
-const isHeading = /^<h[1-6]/i;
+const isHeadingRegex = /^<h[1-6]/i;
 
 export function getHeadingsWithOffsetPreview(
   headings: HeadingCache[],
@@ -12,7 +12,7 @@ export function getHeadingsWithOffsetPreview(
   let heightSum = 0;
   // @ts-expect-error height not defined in obsidian typing
   view.previewMode.renderer.sections.forEach(({ html, height = 0 }) => {
-    if (isHeading.test(html)) {
+    if (isHeadingRegex.test(html)) {
       headingsOffset.push(heightSum);
     }
     heightSum += height;
