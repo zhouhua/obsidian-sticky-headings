@@ -210,16 +210,15 @@ export default class StickyHeadingsPlugin extends Plugin {
 
     this.fileResolveMap.forEach((_, id) => {
       if (!validIds.has(id)) {
-        console.log('deleting');
+        // debug: console.log('deleting');
         const item = this.fileResolveMap.get(id);
-        item?.headingEl?.removeStickyHeader();
+        item?.headingEl.removeStickyHeader();
         this.fileResolveMap.delete(id);
       }
     });
   }
 
   async retrieveHeadings(file: TFile, view: MarkdownView): Promise<Heading[]> {
-    console.log('🚀 ~ view:', view);
     const headings = getHeadings(file, this.app);
 
     if (!headings || headings.length === 0) return [];

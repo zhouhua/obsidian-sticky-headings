@@ -1,4 +1,5 @@
 import type { MarkdownView, TFile, Pos, HeadingCache } from 'obsidian';
+import StickyHeaderComponent from './stickyHeader';
 
 export interface ISetting {
   max: number;
