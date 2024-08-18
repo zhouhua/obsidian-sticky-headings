@@ -19,6 +19,9 @@ const en: BaseTranslation = {
       smooth: 'Smooth',
       instant: 'Instant',
     },
+    theme: {
+      title: 'Theme',
+    }
   },
 };
 

@@ -58,7 +58,7 @@
 </script>
 
 {#if (forceRenderingHeadings || headings).length > 0}
-  <div class="sticky-headings-root" bind:this={main}>
+  <div class={`sticky-headings-root sticky-headings-theme-${settings.theme}`} bind:this={main}>
     <div class="sticky-headings-container">
       {#key forceRenderingHeadings || headings}
         {#each forceRenderingHeadings || headings as heading}
@@ -111,7 +111,7 @@
   </div>
 {/if}
 
-<style>
+<style >
   .sticky-headings-root {
     position: absolute;
     top: 0;
@@ -126,7 +126,6 @@
   .sticky-headings-container {
     max-width: var(--file-line-width);
     margin: 0 auto;
-    background-color: var(--background-primary);
   }
 
   .sticky-headings-root {
@@ -187,7 +186,27 @@
     padding-left: calc(var(--indent-width) * 5);
   }
 
-  .sticky-headings-item:last-of-type {
-    padding-bottom: 5px;
+  .sticky-headings-theme-flat .sticky-headings-container {
+    background-color: var(--background-primary);
   }
+
+  .sticky-headings-theme-blur .sticky-headings-container {
+    padding: 12px;
+    backdrop-filter: blur(12px);
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+  }
+
+  .sticky-headings-theme-float.sticky-headings-root {
+    padding: 10px 20%;
+    padding-bottom: 0;
+  }
+
+  .sticky-headings-theme-float .sticky-headings-container {
+    border-radius: 32px;
+    background-color: #000;
+    color: #fff;
+    padding: 10px 32px;
+  }
+
 </style>
