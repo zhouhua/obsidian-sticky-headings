@@ -28,10 +28,15 @@ export function parseMarkdown(markdown: string, app: App): Promise<string> {
   );
 }
 
+// used to check if we are in source mode AND NOT live preview
 export const isEditSourceMode = (view: MarkdownView) =>
   view.editMode.sourceMode && view.currentMode.type !== 'preview';
 
+// used to check if we are in source mode OR live preview
+export const isEditMode = (view: MarkdownView) =>
+  view.currentMode.type !== 'preview';
+
 export const getScroller = (view: MarkdownView) =>
-  view.currentMode.type !== 'preview'
+  isEditMode(view)
     ? view.editor.cm.scrollDOM
     : view.previewMode.renderer.previewEl;

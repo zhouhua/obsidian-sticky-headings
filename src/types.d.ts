@@ -43,7 +43,7 @@ declare module 'obsidian' {
   interface Editor {
     cm: {
       scrollDOM: HTMLElement;
-      lineBlockAt: (Pos) => {};
+      lineBlockAt: (Pos) => { top: number };
     };
   }
   interface MarkdownPreviewView {
