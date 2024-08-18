@@ -17,7 +17,6 @@ export default class StickyHeaderComponent {
         props: {
           headings: [],
           editMode: false,
-          indentList: [],
           view,
         },
       });
@@ -39,12 +38,6 @@ export default class StickyHeaderComponent {
   updateEditMode(editMode: boolean) {
     if (this.stickyHeaderComponent) {
       this.stickyHeaderComponent.$set({ editMode });
-    }
-  }
-
-  updateIndentList(indentList: number[]) {
-    if (this.stickyHeaderComponent) {
-      this.stickyHeaderComponent.$set({ indentList });
     }
   }
 }

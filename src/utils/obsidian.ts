@@ -28,7 +28,10 @@ export function parseMarkdown(markdown: string, app: App): Promise<string> {
   );
 }
 
-export const isEditSourceMode = (view: MarkdownView) => view.currentMode.type !== 'preview';
+export const isEditSourceMode = (view: MarkdownView) =>
+  view.editMode.sourceMode && view.currentMode.type !== 'preview';
 
 export const getScroller = (view: MarkdownView) =>
-    isEditSourceMode(view) ? view.editor.cm.scrollDOM: view.previewMode.renderer.previewEl;
+  view.currentMode.type !== 'preview'
+    ? view.editor.cm.scrollDOM
+    : view.previewMode.renderer.previewEl;

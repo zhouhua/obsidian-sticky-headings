@@ -13,7 +13,6 @@ import {
 import StickyHeaderComponent from './stickyHeader';
 import getShownHeadings, { trivial } from './utils/getShownHeadings';
 import { throttle } from 'lodash';
-import { calcIndentLevels } from './utils/calcIndentLevels';
 
 type FileResolveMap = Map<string, FileResolveEntry>;
 
@@ -151,22 +150,44 @@ export default class StickyHeadingsPlugin extends Plugin {
   async setHeadingsInView(scroller: HTMLElement, item: FileResolveEntry) {
     const scrollTop = scroller.scrollTop;
     // fixme: Use a more appropriate method to get the component height.
-    const stickHeaderHeight = scroller.closest('.view-content')?.querySelector<HTMLElement>('.sticky-headings-root')?.clientHeight || 0;
+    const stuckHeaderHeight =
+      scroller
+        .closest('.view-content')
+        ?.querySelector<HTMLElement>('.sticky-headings-root')?.clientHeight ||
+      0;
     if (item) {
       const headings = await this.retrieveHeadings(item.file, item.view);
       item.headings = headings;
       const headingsInView = headings.filter(
-        (heading) => heading.offset < scrollTop + stickHeaderHeight
+        (heading) => heading.offset < scrollTop + stuckHeaderHeight
       );
-      let findalHeadings:Heading[] = [];
+      let findalHeadings: Heading[] = [];
       trivial(headingsInView, findalHeadings, this.settings.mode);
-      if(this.settings.max) {
+      if (this.settings.max) {
         findalHeadings = findalHeadings.slice(-this.settings.max);
       }
-      const indentList = calcIndentLevels(findalHeadings);
-      // add settings max call
+
+      // Simple indentation calculation
+      if (findalHeadings.length === 0) {
+        return [];
+      }
+
+      const result: Heading[] = [];
+      let currentLevel = 6; // Start with the highest possible level
+
+      for (let i = findalHeadings.length - 1; i >= 0; i--) {
+        const heading = findalHeadings[i];
+
+        if (heading.level < currentLevel) {
+          result.unshift(heading);
+          currentLevel = heading.level;
+        }
+
+        // Break if we've reached the highest level
+        if (currentLevel === 1) break;
+      }
+
       item.headingEl.updateHeadings(findalHeadings);
-      item.headingEl.updateIndentList(indentList);
     }
   }
 
@@ -229,12 +250,11 @@ export default class StickyHeadingsPlugin extends Plugin {
     if (!headings || headings.length === 0) return [];
 
     return await Promise.all(
-      getShownHeadings(headings, view)
-        .map(async ({heading, offset}) => ({
-          ...heading,
-          title: await parseMarkdown(heading.heading, this.app),
-          offset,
-        }))
+      getShownHeadings(headings, view).map(async ({ heading, offset }) => ({
+        ...heading,
+        title: await parseMarkdown(heading.heading, this.app),
+        offset,
+      }))
     );
   }
 

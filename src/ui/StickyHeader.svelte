@@ -6,7 +6,6 @@
   export let headings: Heading[];
   export let editMode: boolean;
   export let view: MarkdownView;
-  export let indentList: number[];
   let main: HTMLElement;
 
   onMount(() => {
@@ -24,7 +23,7 @@
       {#each headings as heading, i}
         <div
           class="sticky-headings-item"
-          data-indent-level={indentList[i]}
+          data-indent-level={i}
           on:click={() => {
             const scrollerSource = getScroller(view);
             // calculate height of header at clicked location before scrolling
@@ -33,7 +32,9 @@
           }}
           role="button"
           tabindex="0"
-          on:keydown={(e) => e.key === 'Enter' && scrollTo({ top: heading.offset })}
+          on:keydown={(e) =>
+            e.key === 'Enter' &&
+            scrollTo({ top: heading.offset - main.clientHeight })}
         >
           {#if editMode}
             {#each { length: heading.level } as _, i}
