@@ -15,9 +15,8 @@ declare global {
 let locale: Locales = 'en';
 try {
   locale = (window.i18next.language || '').startsWith('zh') ? 'zh' : 'en';
-}
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-catch (e) {
+} catch (e) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   /* empty */
 }
 

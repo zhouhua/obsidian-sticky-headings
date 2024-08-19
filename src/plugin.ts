@@ -37,10 +37,9 @@ export default class StickyHeadingsPlugin extends Plugin {
       }
     },
     50,
-    { leading: true, trailing: true },
+    { leading: true, trailing: true }
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-misused-promises
   async onload() {
     await this.loadSettings();
 
@@ -50,12 +49,14 @@ export default class StickyHeadingsPlugin extends Plugin {
         setTimeout(() => {
           this.checkFileResolveMap();
         }, 100);
-      }),
+      })
     );
 
-    this.registerEvent(this.app.metadataCache.on('resolve', file => {
-      this.handleResolve(file);
-    }));
+    this.registerEvent(
+      this.app.metadataCache.on('resolve', file => {
+        this.handleResolve(file);
+      })
+    );
 
     this.checkFileResolveMap();
 
@@ -72,7 +73,6 @@ export default class StickyHeadingsPlugin extends Plugin {
           const headings = await this.retrieveHeadings(file, view);
           const headingEl = new StickyHeaderComponent(view);
 
-          // eslint-disable-next-line @typescript-eslint/no-misused-promises
           const layoutChangeEvent = this.app.workspace.on('layout-change', this.handleComponentUpdate.bind(this));
 
           this.fileResolveMap.set(id, {
@@ -127,8 +127,7 @@ export default class StickyHeadingsPlugin extends Plugin {
             // Update the fileResolveMap with the new scroll listener
             item.scrollListener = newScrollListener;
             this.fileResolveMap.set(id, item);
-          }
-          else {
+          } else {
             // If there's no scroller, ensure we remove any existing listener
             item.scrollListener = null;
             this.fileResolveMap.set(id, item);
@@ -151,10 +150,12 @@ export default class StickyHeadingsPlugin extends Plugin {
         findalHeadings = findalHeadings.slice(-this.settings.max);
       }
       const indentList = calcIndentLevels(findalHeadings);
-      item.headingEl.updateHeadings(findalHeadings.map((heading, i) => ({
-        ...heading,
-        indentLevel: indentList[i] || 0,
-      })));
+      item.headingEl.updateHeadings(
+        findalHeadings.map((heading, i) => ({
+          ...heading,
+          indentLevel: indentList[i] || 0,
+        }))
+      );
     }
   }
 
@@ -221,7 +222,7 @@ export default class StickyHeadingsPlugin extends Plugin {
         title: await parseMarkdown(heading.heading, this.app),
         offset,
         indentLevel: heading.level - 1,
-      })),
+      }))
     );
   }
 

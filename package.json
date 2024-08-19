@@ -8,7 +8,8 @@
     "build": "node esbuild.config.mjs production",
     "version": "node version-bump.mjs && git add manifest.json versions.json",
     "typesafe-i18n": "typesafe-i18n",
-    "lint": "eslint ./"
+    "lint": "eslint ./",
+    "pretty": "prettier --write \"./**/*.{js,jsx,mjs,cjs,ts,tsx,json}\""
   },
   "keywords": [
     "obsidian",
