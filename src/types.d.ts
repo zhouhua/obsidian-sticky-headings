@@ -25,27 +25,8 @@ export interface Heading extends HeadingCache {
 }
 
 declare module 'obsidian' {
-  interface WorkspaceLeaf {
-    id: string;
-  }
-  interface MarkdownView {
-    getFile: () => TFile;
-    editMode: {
-      sourceMode: boolean;
-      containerEl: {
-        querySelector: (string) => HTMLElement;
-      };
-    };
-  }
-
   interface MarkdownSubView {
     type: 'source' | 'preview';
-  }
-  interface Editor {
-    cm: {
-      scrollDOM: HTMLElement;
-      lineBlockAt: (Pos) => { top: number };
-    };
   }
   interface MarkdownPreviewView {
     renderer: {
