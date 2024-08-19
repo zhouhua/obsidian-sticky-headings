@@ -32,9 +32,7 @@
           }}
           role="button"
           tabindex="0"
-          on:keydown={(e) =>
-            e.key === 'Enter' &&
-            scrollTo({ top: heading.offset - main.clientHeight })}
+          on:keydown={e => e.key === 'Enter' && scrollTo({ top: heading.offset - main.clientHeight })}
         >
           {#if editMode}
             {#each { length: heading.level } as _, i}

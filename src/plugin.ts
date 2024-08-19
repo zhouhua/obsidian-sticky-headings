@@ -40,6 +40,7 @@ export default class StickyHeadingsPlugin extends Plugin {
     { leading: true, trailing: true }
   );
 
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
   async onload() {
     await this.loadSettings();
 
@@ -73,6 +74,7 @@ export default class StickyHeadingsPlugin extends Plugin {
           const headings = await this.retrieveHeadings(file, view);
           const headingEl = new StickyHeaderComponent(view);
 
+          // eslint-disable-next-line @typescript-eslint/no-misused-promises
           const layoutChangeEvent = this.app.workspace.on('layout-change', this.handleComponentUpdate.bind(this));
 
           this.fileResolveMap.set(id, {

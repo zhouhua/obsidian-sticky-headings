@@ -56,7 +56,7 @@ export default tseslint.config(
         },
       ],
       '@stylistic/linebreak-style': ['error', 'unix'],
-      '@stylistic/no-confusing-arrow': 'error',
+      '@stylistic/no-confusing-arrow': 'off',
       '@stylistic/no-extra-semi': 'error',
       '@stylistic/object-curly-newline': [
         'error',
@@ -104,7 +104,7 @@ export default tseslint.config(
           multilineDetection: 'brackets',
           singleline: {
             delimiter: 'semi',
-            requireLast: true,
+            requireLast: false,
           },
         },
       ],
