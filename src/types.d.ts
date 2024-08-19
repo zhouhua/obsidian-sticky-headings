@@ -1,5 +1,5 @@
-import type { MarkdownView, TFile, Pos, HeadingCache } from 'obsidian';
-import StickyHeaderComponent from './stickyHeader';
+import type { MarkdownView, TFile, HeadingCache, EventRef } from 'obsidian';
+import type StickyHeaderComponent from './stickyHeader';
 
 export interface ISetting {
   max: number;
@@ -28,9 +28,7 @@ declare module 'obsidian' {
   interface MarkdownSubView {
     type: 'source' | 'preview';
   }
-  interface MarkdownPreviewView {
-    renderer: {
-      previewEl: HTMLElement;
-    };
+  interface RendererSection {
+    height: number;
   }
 }

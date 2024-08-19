@@ -33,7 +33,7 @@ export const isEditSourceMode = (view: MarkdownView) => view.editMode.sourceMode
 export const isEditMode = (view: MarkdownView) => view.currentMode.type !== 'preview';
 
 export const getScroller = (view: MarkdownView) =>
-  isEditMode(view) ? view.editor.cm.scrollDOM : view.previewMode.renderer.previewEl;
+  (isEditMode(view) ? view.editor.cm.scrollDOM : view.previewMode.renderer.previewEl);
 
 export const getContainerEl = (el: HTMLElement | Element) =>
   el.closest('.view-content')?.querySelector('.sticky-headings-root');

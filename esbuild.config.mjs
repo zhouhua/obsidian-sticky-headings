@@ -39,7 +39,7 @@ const context = await esbuild.context({
   logLevel: 'info',
   sourcemap: prod ? false : 'inline',
   treeShaking: true,
-  minify: false,
+  minify: prod,
   outfile: 'main.js',
   plugins: [
     esbuildSvelte({
@@ -52,6 +52,7 @@ const context = await esbuild.context({
 if (prod) {
   await context.rebuild();
   process.exit(0);
-} else {
+}
+else {
   await context.watch();
 }

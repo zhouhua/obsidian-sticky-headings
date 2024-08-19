@@ -21,7 +21,7 @@ export default tseslint.config({
 {
   ignores: [
     'main.js',
-    'typings/**',
+    'dist/**/*',
   ],
 },
 {
