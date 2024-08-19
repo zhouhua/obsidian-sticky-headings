@@ -15,6 +15,7 @@ import {
 import StickyHeaderComponent from './stickyHeader';
 import getShownHeadings, { trivial } from './utils/getShownHeadings';
 import { throttle } from 'lodash';
+import { calcIndentLevels } from './utils/calcIndentLevels';
 
 type FileResolveMap = Map<string, FileResolveEntry>;
 
@@ -149,28 +150,11 @@ export default class StickyHeadingsPlugin extends Plugin {
       if (this.settings.max) {
         findalHeadings = findalHeadings.slice(-this.settings.max);
       }
-
-      // Simple indentation calculation
-      if (findalHeadings.length === 0) {
-        return [];
-      }
-
-      const result: Heading[] = [];
-      let currentLevel = 6; // Start with the highest possible level
-
-      for (let i = findalHeadings.length - 1; i >= 0; i--) {
-        const heading = findalHeadings[i];
-
-        if (heading.level < currentLevel) {
-          result.unshift(heading);
-          currentLevel = heading.level;
-        }
-
-        // Break if we've reached the highest level
-        if (currentLevel === 1) break;
-      }
-
-      item.headingEl.updateHeadings(findalHeadings);
+      const indentList = calcIndentLevels(findalHeadings);
+      item.headingEl.updateHeadings(findalHeadings.map((heading, i) => ({
+        ...heading,
+        indentLevel: indentList[i] || 0,
+      })));
     }
   }
 
@@ -236,6 +220,7 @@ export default class StickyHeadingsPlugin extends Plugin {
         ...heading,
         title: await parseMarkdown(heading.heading, this.app),
         offset,
+        indentLevel: heading.level - 1,
       })),
     );
   }

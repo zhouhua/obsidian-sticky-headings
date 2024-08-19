@@ -22,6 +22,7 @@ export interface FileResolveEntry {
 export interface Heading extends HeadingCache {
   title: string;
   offset: number;
+  indentLevel: number;
 }
 
 declare module 'obsidian' {
