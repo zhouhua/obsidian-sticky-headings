@@ -20,7 +20,7 @@ export default tseslint.config(
     },
   },
   {
-    ignores: ['main.js', 'dist/**/*'],
+    ignores: ['main.js', 'dist/**/*', 'i18n/i18n-*.ts'],
   },
   {
     rules: {
@@ -36,7 +36,7 @@ export default tseslint.config(
       '@stylistic/ban-ts-comment': 'off',
       '@stylistic/no-prototype-builtins': 'off',
       '@stylistic/no-empty-function': 'off',
-      '@stylistic/semi': ['error', 'always'],
+      '@stylistic/semi': ['off'],
       '@stylistic/arrow-parens': ['error', 'as-needed'],
       '@stylistic/array-bracket-newline': 'error',
       '@stylistic/array-element-newline': ['error', 'consistent'],
@@ -115,7 +115,8 @@ export default tseslint.config(
           allowAllPropertiesOnSameLine: true,
         },
       ],
-
+      '@stylistic/comma-dangle': 'off',
+      '@stylistic/brace-style': 'off',
       '@typescript-eslint/no-unused-vars': ['error', { args: 'none' }],
       '@typescript-eslint/adjacent-overload-signatures': 'error',
       '@typescript-eslint/consistent-indexed-object-style': 'error',
