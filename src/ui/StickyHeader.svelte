@@ -15,6 +15,13 @@
   onDestroy(() => {
     console.log('destroyed');
   });
+
+  const handleScroll = (heading: Heading) => {
+    const scrollerSource = getScroller(view);
+    // calculate height of header at clicked location before scrolling
+    const top = heading.offset - main.clientHeight;
+    scrollerSource.scrollTo({ top, behavior: 'instant' });
+  };
 </script>
 
 <div class="sticky-headings-root" bind:this={main}>
@@ -24,15 +31,12 @@
         <div
           class="sticky-headings-item"
           data-indent-level={i}
-          on:click={() => {
-            const scrollerSource = getScroller(view);
-            // calculate height of header at clicked location before scrolling
-            const top = heading.offset - main.clientHeight;
-            scrollerSource.scrollTo({ top, behavior: 'instant' });
-          }}
+          on:click={() => handleScroll(heading)}
           role="button"
           tabindex="0"
-          on:keydown={e => e.key === 'Enter' && scrollTo({ top: heading.offset - main.clientHeight })}
+          on:keydown={e => {
+            if (e.key === 'Enter') handleScroll(heading);
+          }}
         >
           {#if editMode}
             {#each { length: heading.level } as _, i}
