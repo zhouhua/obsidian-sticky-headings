@@ -10,7 +10,7 @@
     "typesafe-i18n": "typesafe-i18n",
     "lint": "eslint ./",
     "pretty": "prettier --write \"./**/*.{mjs,cjs,ts,tsx,json,svelte}\"",
-    "prepare": "husky install"
+    "prepare": "husky"
   },
   "keywords": [
     "obsidian",
