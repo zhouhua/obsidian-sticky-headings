@@ -16,6 +16,7 @@ import StickyHeaderComponent from './stickyHeader';
 import getShownHeadings, { trivial } from './utils/getShownHeadings';
 import { throttle } from 'lodash';
 import { calcIndentLevels } from './utils/calcIndentLevels';
+import { makeExpectedHeadings } from './utils/makeExpectedHeadings';
 
 type FileResolveMap = Map<string, FileResolveEntry>;
 
@@ -98,7 +99,7 @@ export default class StickyHeadingsPlugin extends Plugin {
 
   async updateHeadings(file: TFile, view: MarkdownView, item: FileResolveEntry) {
     await this.setHeadingsInView(getScroller(view), item);
-    item.headingEl.updateHeadings(item.headings);
+    // item.headingEl.updateHeadings(item.headings);
     return item.headings;
   }
 
@@ -156,7 +157,8 @@ export default class StickyHeadingsPlugin extends Plugin {
         findalHeadings.map((heading, i) => ({
           ...heading,
           indentLevel: indentList[i] || 0,
-        }))
+        })),
+        makeExpectedHeadings(headings, this.settings.max, this.settings.mode)
       );
     }
   }
@@ -219,7 +221,7 @@ export default class StickyHeadingsPlugin extends Plugin {
     if (!headings || headings.length === 0) return [];
 
     return await Promise.all(
-      getShownHeadings(headings, view).map(async ({ heading, offset }) => {
+      getShownHeadings(headings, view).map(async heading => {
         const cacheKey = heading.heading;
         let title: string;
         if (cacheKey in this.markdownCache) {
@@ -230,12 +232,9 @@ export default class StickyHeadingsPlugin extends Plugin {
           // console.log('adding to cache');
           this.markdownCache[cacheKey] = title;
         }
-
         return {
           ...heading,
           title,
-          offset,
-          indentLevel: heading.level - 1,
         };
       })
     );

@@ -4,10 +4,7 @@ import { isEditMode } from './obsidian';
 
 const isHeadingRegex = /^<h[1-6]/i;
 
-export function getHeadingsWithOffsetPreview(
-  headings: HeadingCache[],
-  view: MarkdownView
-): { heading: HeadingCache; offset: number }[] {
+export function getHeadingsWithOffsetPreview(headings: HeadingCache[], view: MarkdownView): Heading[] {
   const headingsOffset: number[] = [];
   let heightSum = 0;
   // @ts-expect-error height not defined in obsidian typing
@@ -17,26 +14,28 @@ export function getHeadingsWithOffsetPreview(
     }
     heightSum += height;
   });
-  return headings.map((heading, index) => ({
-    heading,
+  return headings.map<Heading>((heading, index) => ({
+    ...heading,
     offset: headingsOffset[index] || 0,
+    indentLevel: heading.level - 1,
+    title: heading.heading,
+    index,
   }));
 }
 
-export function getHeadingsWithOffsetSource(
-  headings: HeadingCache[],
-  view: MarkdownView
-): { heading: HeadingCache; offset: number }[] {
-  const result: { heading: HeadingCache; offset: number }[] = [];
-  for (const heading of headings) {
+export function getHeadingsWithOffsetSource(headings: HeadingCache[], view: MarkdownView): Heading[] {
+  const result = headings.map<Heading>((heading, i) => {
     const { position } = heading;
     const offset = view.editMode.containerEl.querySelector<HTMLElement>('.cm-contentContainer')?.offsetTop || 0;
     const { top = 0 } = view.editor.cm.lineBlockAt(position.start.offset);
-    result.push({
-      heading,
+    return {
+      ...heading,
       offset: top + offset,
-    });
-  }
+      indentLevel: heading.level - 1,
+      title: heading.heading,
+      index: i,
+    };
+  });
   return result;
 }
 
@@ -62,10 +61,7 @@ export function trivial(subHeadings: Heading[], result: Heading[], mode: 'defaul
   }
   trivial(subHeadings.slice(indexesOfTopLevel[indexesOfTopLevel.length - 1] + 1), result, mode);
 }
-export function getHeadingsWithOffset(
-  headings: HeadingCache[],
-  view: MarkdownView
-): { heading: HeadingCache; offset: number }[] {
+export function getHeadingsWithOffset(headings: HeadingCache[], view: MarkdownView): Heading[] {
   const getValidHeadings = isEditMode(view) ? getHeadingsWithOffsetSource : getHeadingsWithOffsetPreview;
   const validHeadings = getValidHeadings(headings, view);
   return validHeadings;

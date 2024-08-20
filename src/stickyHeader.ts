@@ -17,6 +17,7 @@ export default class StickyHeaderComponent {
         headings: [],
         editMode: false,
         view,
+        getExpectedHeadings: () => [],
       },
     });
   }
@@ -25,8 +26,8 @@ export default class StickyHeaderComponent {
     this.stickyHeaderComponent.$destroy();
   }
 
-  updateHeadings(headings: Heading[]) {
-    this.stickyHeaderComponent.$set({ headings });
+  updateHeadings(headings: Heading[], getExpectedHeadings: (index: number) => Heading[]) {
+    this.stickyHeaderComponent.$set({ headings, getExpectedHeadings });
   }
 
   updateEditMode(editMode: boolean) {

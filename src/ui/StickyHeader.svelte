@@ -3,10 +3,14 @@
   import type { Heading } from '../types';
   import { onDestroy, onMount } from 'svelte';
   import { getScroller } from 'src/utils/obsidian';
+  import { delay } from '../utils/delay';
   export let headings: Heading[];
   export let editMode: boolean;
   export let view: MarkdownView;
+  export let getExpectedHeadings: (clickHeadingIndex: number) => Heading[];
   let main: HTMLElement;
+  let shadow: HTMLElement;
+  let expectedHeadings: Heading[] = [];
   export const showIcons: boolean = true;
 
   onMount(() => {
@@ -17,12 +21,18 @@
     console.log('destroyed');
   });
 
-  const calculateExpectedHeight = () => {};
+  const calculateExpectedHeight = async (index: number) => {
+    expectedHeadings = getExpectedHeadings(index);
+    // fixme: Is there a better way to run subsequent code after Shadow has rendered?
+    await delay(20);
+    // fixme: The expected height should not be the height of Shadow but the offset of the lower boundary of Shadow.
+    return shadow.clientHeight;
+  };
 
-  const handleScrollClick = (heading: Heading) => {
+  const handleScrollClick = async (heading: Heading) => {
     const scrollerSource = getScroller(view);
-    const expectedHeight = calculateExpectedHeight();
-    const top = heading.offset - main.clientHeight;
+    const expectedHeight = await calculateExpectedHeight(heading.index);
+    const top = heading.offset - expectedHeight;
     scrollerSource.scrollTo({ top, behavior: 'instant' });
   };
 </script>
@@ -58,12 +68,35 @@
     {/key}
   </div>
 </div>
+<div class="sticky-headings-root sticky-headings-shadow" bind:this={shadow}>
+  <div class="sticky-headings-container">
+    {#key expectedHeadings}
+      {#each expectedHeadings as heading}
+        <div class="sticky-headings-item" data-indent-level={0}>
+          {#if showIcons}
+            {#if editMode}
+              #
+            {:else}
+              <div class="sticky-headings-icon"></div>
+            {/if}
+          {/if}
+          {heading.title}
+        </div>
+      {/each}
+    {/key}
+  </div>
+</div>
 
 <style>
   .sticky-headings-root {
     position: absolute;
     top: 0;
     width: 100%;
+  }
+
+  .sticky-headings-shadow {
+    opacity: 0;
+    pointer-events: none;
   }
 
   .sticky-headings-container {

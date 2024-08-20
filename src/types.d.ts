@@ -23,6 +23,7 @@ export interface Heading extends HeadingCache {
   title: string;
   offset: number;
   indentLevel: number;
+  index: number;
 }
 
 declare module 'obsidian' {
