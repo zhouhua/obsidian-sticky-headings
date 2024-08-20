@@ -7,6 +7,7 @@
   export let editMode: boolean;
   export let view: MarkdownView;
   let main: HTMLElement;
+  export const showIcons: boolean = true;
 
   onMount(() => {
     console.log('mounted svelte component');
@@ -16,9 +17,11 @@
     console.log('destroyed');
   });
 
-  const handleScroll = (heading: Heading) => {
+  const calculateExpectedHeight = () => {};
+
+  const handleScrollClick = (heading: Heading) => {
     const scrollerSource = getScroller(view);
-    // calculate height of header at clicked location before scrolling
+    const expectedHeight = calculateExpectedHeight();
     const top = heading.offset - main.clientHeight;
     scrollerSource.scrollTo({ top, behavior: 'instant' });
   };
@@ -31,21 +34,23 @@
         <div
           class="sticky-headings-item"
           data-indent-level={i}
-          on:click={() => handleScroll(heading)}
+          on:click={() => handleScrollClick(heading)}
           role="button"
           tabindex="0"
           on:keydown={e => {
-            if (e.key === 'Enter') handleScroll(heading);
+            if (e.key === 'Enter') handleScrollClick(heading);
           }}
         >
-          {#if editMode}
-            {#each { length: heading.level } as _, i}
-              #
-            {/each}
-          {:else}
-            <div class="sticky-headings-icon">
-              {@html getIcon(`heading-${heading.level}`)?.outerHTML}
-            </div>
+          {#if showIcons}
+            {#if editMode}
+              {#each { length: heading.level } as _, i}
+                #
+              {/each}
+            {:else}
+              <div class="sticky-headings-icon">
+                {@html getIcon(`heading-${heading.level}`)?.outerHTML}
+              </div>
+            {/if}
           {/if}
           {heading.title}
         </div>
