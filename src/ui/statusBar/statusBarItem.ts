@@ -13,9 +13,7 @@ export default class StickyHeaderComponent {
     this.statusBarItemComponent = new StatusBarItem({
       target: statusItemEl,
       props: {
-        headings: [],
         view,
-        settings,
         heading: undefined,
         file: undefined,
       },
@@ -26,16 +24,12 @@ export default class StickyHeaderComponent {
     this.statusBarItemComponent.$destroy();
   }
 
-  switchFile(file: TFile, headings: Heading[], heading: Heading, view: MarkdownView) {
-    this.statusBarItemComponent.$set({ file, headings, heading, view });
+  switchFile(file: TFile, heading: Heading, view: MarkdownView) {
+    this.statusBarItemComponent.$set({ file, heading, view });
   }
 
-  updateSettings(settings: ISetting) {
-    this.statusBarItemComponent.$set({ settings });
-  }
-
-  updateHeading(headings: Heading[], heading?: Heading) {
-    this.statusBarItemComponent.$set({ heading, headings });
+  updateHeading(heading?: Heading) {
+    this.statusBarItemComponent.$set({ heading });
   }
 
   hide() {

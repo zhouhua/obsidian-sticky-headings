@@ -19,6 +19,8 @@ import getShownHeadings, { trivial } from './utils/getShownHeadings';
 import { throttle } from 'lodash';
 import { calcIndentLevels } from './utils/calcIndentLevels';
 import { makeExpectedHeadings } from './utils/makeExpectedHeadings';
+import { HeadingSuggester } from './ui/statusBar/suggester';
+import { animateScroll } from './utils/scroll';
 
 type FileResolveMap = Map<string, FileResolveEntry>;
 
@@ -73,7 +75,35 @@ export default class StickyHeadingsPlugin extends Plugin {
   initStatusBarItem() {
     const statusBarEl = this.addStatusBarItem();
     statusBarEl.addClass('mod-clickable');
+    statusBarEl.addEventListener('click', this.showSuggester.bind(this));
     this.statusBarItemEl = new StatusBarItemComponent(statusBarEl, this.settings);
+    this.addCommand({
+      id: 'quick navigate headings',
+      name: 'Quick Navigate Headings',
+      callback: () => {
+        this.showSuggester();
+      },
+    });
+  }
+
+  showSuggester() {
+    const view = this.app.workspace.getActiveViewOfType(MarkdownView);
+    if (view) {
+      const { id } = view.leaf;
+      const item = this.fileResolveMap.get(id || '');
+      if (item) {
+        const { headings, currentIndex } = item;
+        const modal = new HeadingSuggester(view.app, headings, currentIndex, ({ offset }) => {
+          const scroller = getScroller(view);
+          if (this.settings.scrollBehaviour === 'instant') {
+            scroller.scrollTo({ top: offset, behavior: 'instant' });
+          } else {
+            animateScroll(scroller, offset, 1000);
+          }
+        });
+        modal.open();
+      }
+    }
   }
 
   async initStickyHeaderComponent() {
@@ -97,6 +127,7 @@ export default class StickyHeadingsPlugin extends Plugin {
               headingEl,
               layoutChangeEvent,
               editMode: isEditSourceMode(view),
+              currentIndex: -1,
             });
             this.registerEvent(layoutChangeEvent);
           } else {
@@ -151,6 +182,7 @@ export default class StickyHeadingsPlugin extends Plugin {
             item.scrollListener = null;
             this.fileResolveMap.set(id, item);
           }
+          this.updateHeadings(item.file, item.view, item);
         }
       }
     }
@@ -168,6 +200,7 @@ export default class StickyHeadingsPlugin extends Plugin {
       if (this.settings.max) {
         findalHeadings = findalHeadings.slice(-this.settings.max);
       }
+      item.currentIndex = findalHeadings.length ? findalHeadings[findalHeadings.length - 1].index : -1;
       const indentList = calcIndentLevels(findalHeadings);
       item.headingEl.updateHeadings(
         findalHeadings.map((heading, i) => ({
@@ -178,7 +211,7 @@ export default class StickyHeadingsPlugin extends Plugin {
         this.settings.autoShowFileName && needShowFileName(item.file, this.app),
         item.view
       );
-      this.statusBarItemEl?.switchFile(item.file, headings, findalHeadings[findalHeadings.length - 1], item.view);
+      this.statusBarItemEl?.switchFile(item.file, findalHeadings[findalHeadings.length - 1], item.view);
     } else {
       this.statusBarItemEl?.hide();
     }
