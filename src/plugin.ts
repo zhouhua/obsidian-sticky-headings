@@ -80,8 +80,15 @@ export default class StickyHeadingsPlugin extends Plugin {
     this.addCommand({
       id: 'quick navigate headings',
       name: 'Quick Navigate Headings',
-      callback: () => {
-        this.showSuggester();
+      checkCallback: checking => {
+        const view = this.app.workspace.getActiveViewOfType(MarkdownView);
+        if (view) {
+          if (!checking) {
+            this.showSuggester();
+          }
+          return true;
+        }
+        return false;
       },
     });
   }
