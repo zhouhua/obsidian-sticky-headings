@@ -4,6 +4,7 @@
   import { onDestroy, onMount } from 'svelte';
   import { getScroller } from 'src/utils/obsidian';
   import { delay } from '../utils/delay';
+  import { animateScroll } from 'src/utils/scroll';
   export let headings: Heading[];
   export let editMode: boolean;
   export let view: MarkdownView;
@@ -33,7 +34,10 @@
     const scrollerSource = getScroller(view);
     const expectedHeight = await calculateExpectedHeight(heading.index);
     const top = heading.offset - expectedHeight;
-    scrollerSource.scrollTo({ top, behavior: 'instant' });
+    // fixme: add setting for scroll hehavior;
+    // scrollerSource.scrollTo({ top, behavior: 'instant' });
+    // fixme: add easing function;
+    animateScroll(scrollerSource, top, 1000);
   };
 </script>
 
