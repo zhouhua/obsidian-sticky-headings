@@ -14,6 +14,7 @@ import {
 } from './utils/obsidian';
 
 import StickyHeaderComponent from './stickyHeader';
+import StatusBarItemComponent from './ui/statusBar/statusBarItem';
 import getShownHeadings, { trivial } from './utils/getShownHeadings';
 import { throttle } from 'lodash';
 import { calcIndentLevels } from './utils/calcIndentLevels';
@@ -24,6 +25,7 @@ type FileResolveMap = Map<string, FileResolveEntry>;
 export default class StickyHeadingsPlugin extends Plugin {
   settings: ISetting = defaultSettings;
   headingEl: StickyHeaderComponent | undefined;
+  statusBarItemEl: StatusBarItemComponent | undefined;
   fileResolveMap: FileResolveMap = new Map();
 
   markdownCache: Record<string, string> = {};
@@ -46,6 +48,8 @@ export default class StickyHeadingsPlugin extends Plugin {
   async onload() {
     await this.loadSettings();
 
+    this.initStatusBarItem();
+
     this.registerEvent(
       this.app.workspace.on('active-leaf-change', () => {
         // timeout to wait for cm.editor to load
@@ -64,6 +68,12 @@ export default class StickyHeadingsPlugin extends Plugin {
     this.checkFileResolveMap();
 
     this.addSettingTab(new StickyHeadingsSetting(this.app, this));
+  }
+
+  initStatusBarItem() {
+    const statusBarEl = this.addStatusBarItem();
+    statusBarEl.addClass('mod-clickable');
+    this.statusBarItemEl = new StatusBarItemComponent(statusBarEl, this.settings);
   }
 
   async initStickyHeaderComponent() {
@@ -168,6 +178,9 @@ export default class StickyHeadingsPlugin extends Plugin {
         this.settings.autoShowFileName && needShowFileName(item.file, this.app),
         item.view
       );
+      this.statusBarItemEl?.switchFile(item.file, headings, findalHeadings[findalHeadings.length - 1], item.view);
+    } else {
+      this.statusBarItemEl?.hide();
     }
   }
 
