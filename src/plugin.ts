@@ -73,7 +73,7 @@ export default class StickyHeadingsPlugin extends Plugin {
         const file = view.getFile();
         if (file && isMarkdownFile(file)) {
           const headings = await this.retrieveHeadings(file, view);
-          const headingEl = new StickyHeaderComponent(view);
+          const headingEl = new StickyHeaderComponent(view, this.settings);
 
           // eslint-disable-next-line @typescript-eslint/no-misused-promises
           const layoutChangeEvent = this.app.workspace.on('layout-change', this.handleComponentUpdate.bind(this));
@@ -238,6 +238,14 @@ export default class StickyHeadingsPlugin extends Plugin {
         };
       })
     );
+  }
+
+  onSettingChanged() {
+    this.fileResolveMap.forEach(item => {
+      if (item.headingEl) {
+        item.headingEl.updateSettings(this.settings);
+      }
+    });
   }
 
   onunload() {

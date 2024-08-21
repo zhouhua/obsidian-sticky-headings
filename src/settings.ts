@@ -7,7 +7,7 @@ import type { ISetting } from './types';
 export const defaultSettings = {
   max: 0,
   mode: 'default',
-  scrollBehaviour: 'auto',
+  scrollBehaviour: 'smooth',
 } satisfies ISetting;
 
 export default class StickyHeadingsSetting extends PluginSettingTab {
@@ -21,6 +21,7 @@ export default class StickyHeadingsSetting extends PluginSettingTab {
   update(data: ISetting) {
     this.plugin.settings = data;
     this.plugin.saveSettings();
+    this.plugin.onSettingChanged();
   }
 
   display(): void {
@@ -50,6 +51,20 @@ export default class StickyHeadingsSetting extends PluginSettingTab {
           this.update({
             ...this.plugin.settings,
             max: parseInt(value, 10) || 0,
+          });
+        });
+      });
+    new Setting(containerEl)
+      .setName(L.setting.scrollBehaviour.title())
+      .setDesc(L.setting.scrollBehaviour.description())
+      .addDropdown(dropdown => {
+        dropdown.addOption('smooth', L.setting.scrollBehaviour.smooth());
+        dropdown.addOption('instant', L.setting.scrollBehaviour.instant());
+        dropdown.setValue(this.plugin.settings.scrollBehaviour);
+        dropdown.onChange(value => {
+          this.update({
+            ...this.plugin.settings,
+            scrollBehaviour: value as ScrollBehavior,
           });
         });
       });

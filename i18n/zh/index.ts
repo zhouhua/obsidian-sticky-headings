@@ -15,7 +15,6 @@ const zh: Translation = {
     scrollBehaviour: {
       title: '滚动效果',
       description: '选择滚动效果',
-      auto: '自动',
       smooth: '平滑滚动',
       instant: '即时滚动',
     },

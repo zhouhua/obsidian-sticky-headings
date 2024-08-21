@@ -16,7 +16,6 @@ const en: BaseTranslation = {
     scrollBehaviour: {
       title: 'Scroll Behaviour',
       description: 'Choose between instant or smooth scrolling behaviour',
-      auto: 'Auto',
       smooth: 'Smooth',
       instant: 'Instant',
     },

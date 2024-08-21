@@ -1,15 +1,15 @@
 import StickyHeader from './ui/StickyHeader.svelte';
 import type { MarkdownView } from 'obsidian';
-import type { Heading } from './types';
+import type { Heading, ISetting } from './types';
 
 export default class StickyHeaderComponent {
   stickyHeaderComponent!: StickyHeader;
 
-  constructor(view: MarkdownView) {
-    this.addStickyHeader(view);
+  constructor(view: MarkdownView, settings: ISetting) {
+    this.addStickyHeader(view, settings);
   }
 
-  addStickyHeader(view: MarkdownView) {
+  addStickyHeader(view: MarkdownView, settings: ISetting) {
     const { contentEl } = view;
     this.stickyHeaderComponent = new StickyHeader({
       target: contentEl,
@@ -18,6 +18,7 @@ export default class StickyHeaderComponent {
         editMode: false,
         view,
         getExpectedHeadings: () => [],
+        settings,
       },
     });
   }
@@ -32,5 +33,9 @@ export default class StickyHeaderComponent {
 
   updateEditMode(editMode: boolean) {
     this.stickyHeaderComponent.$set({ editMode });
+  }
+
+  updateSettings(settings: ISetting) {
+    this.stickyHeaderComponent.$set({ settings });
   }
 }

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { getIcon, MarkdownView } from 'obsidian';
-  import type { Heading } from '../types';
+  import type { Heading, ISetting } from '../types';
   import { onDestroy, onMount } from 'svelte';
   import { getScroller } from 'src/utils/obsidian';
   import { delay } from '../utils/delay';
@@ -8,6 +8,7 @@
   export let headings: Heading[];
   export let editMode: boolean;
   export let view: MarkdownView;
+  export let settings: ISetting;
   export let getExpectedHeadings: (clickHeadingIndex: number) => Heading[];
   let main: HTMLElement;
   let shadow: HTMLElement;
@@ -34,10 +35,12 @@
     const scrollerSource = getScroller(view);
     const expectedHeight = await calculateExpectedHeight(heading.index);
     const top = heading.offset - expectedHeight;
-    // fixme: add setting for scroll hehavior;
-    // scrollerSource.scrollTo({ top, behavior: 'instant' });
-    // fixme: add easing function;
-    animateScroll(scrollerSource, top, 1000);
+    if (settings.scrollBehaviour === 'instant') {
+      scrollerSource.scrollTo({ top, behavior: 'instant' });
+    } else {
+      // fixme: add easing function;
+      animateScroll(scrollerSource, top, 1000);
+    }
   };
 </script>
 

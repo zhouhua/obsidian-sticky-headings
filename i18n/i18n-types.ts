@@ -53,10 +53,6 @@ type RootTranslation = {
 			 */
 			description: string
 			/**
-			 * A​u​t​o
-			 */
-			auto: string
-			/**
 			 * S​m​o​o​t​h
 			 */
 			smooth: string
@@ -107,10 +103,6 @@ export type TranslationFunctions = {
 			 * Choose between instant or smooth scrolling behaviour
 			 */
 			description: () => LocalizedString
-			/**
-			 * Auto
-			 */
-			auto: () => LocalizedString
 			/**
 			 * Smooth
 			 */
