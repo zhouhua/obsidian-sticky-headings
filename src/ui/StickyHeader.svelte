@@ -47,10 +47,10 @@
 <div class="sticky-headings-root" bind:this={main}>
   <div class="sticky-headings-container">
     {#key headings}
-      {#each headings as heading, i}
+      {#each headings as heading}
         <div
           class="sticky-headings-item"
-          data-indent-level={i}
+          data-indent-level={heading.indentLevel}
           on:click={() => handleScrollClick(heading)}
           role="button"
           tabindex="0"
