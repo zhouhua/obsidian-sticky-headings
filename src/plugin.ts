@@ -29,7 +29,7 @@ export default class StickyHeadingsPlugin extends Plugin {
   headingEl: StickyHeaderComponent | undefined;
   statusBarItemEl: StatusBarItemComponent | undefined;
   fileResolveMap: FileResolveMap = new Map();
-
+  statusBarEl: HTMLElement | undefined;
   markdownCache: Record<string, string> = {};
 
   detectPosition = throttle(
@@ -73,10 +73,13 @@ export default class StickyHeadingsPlugin extends Plugin {
   }
 
   initStatusBarItem() {
-    const statusBarEl = this.addStatusBarItem();
-    statusBarEl.addClass('mod-clickable');
-    statusBarEl.addEventListener('click', this.showSuggester.bind(this));
-    this.statusBarItemEl = new StatusBarItemComponent(statusBarEl, this.settings);
+    this.statusBarEl = this.addStatusBarItem();
+    this.statusBarEl.addClass('mod-clickable');
+    if (!this.settings.showInStatusBar) {
+      this.statusBarEl.style.display = 'none';
+    }
+    this.statusBarEl.addEventListener('click', this.showSuggester.bind(this));
+    this.statusBarItemEl = new StatusBarItemComponent(this.statusBarEl, this.settings);
     this.addCommand({
       id: 'quick navigate headings',
       name: 'Quick Navigate Headings',
@@ -305,6 +308,13 @@ export default class StickyHeadingsPlugin extends Plugin {
         item.headingEl.updateSettings(this.settings);
       }
     });
+    if (this.statusBarEl) {
+      if (this.settings.showInStatusBar) {
+        this.statusBarEl.style.display = 'inline-flex';
+      } else {
+        this.statusBarEl.style.display = 'none';
+      }
+    }
   }
 
   onunload() {

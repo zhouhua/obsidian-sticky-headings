@@ -8,6 +8,7 @@ export interface ISetting {
   scrollBehaviour: ScrollBehavior;
   showIcon: boolean;
   autoShowFileName: boolean;
+  showInStatusBar: boolean;
 }
 
 export interface FileResolveEntry {
