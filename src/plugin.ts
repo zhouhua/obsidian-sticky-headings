@@ -105,7 +105,6 @@ export default class StickyHeadingsPlugin extends Plugin {
         const { headings, currentIndex } = item;
         const modal = new HeadingSuggester(view.app, headings, currentIndex, async ({ offset, index }) => {
           const height = await this.predictHeadingsHeight(index);
-          console.log(height);
           const scroller = getScroller(view);
           if (this.settings.scrollBehaviour === 'instant') {
             scroller.scrollTo({ top: offset - height - 4, behavior: 'instant' });
@@ -302,7 +301,6 @@ export default class StickyHeadingsPlugin extends Plugin {
 
     this.fileResolveMap.forEach((_, id) => {
       if (!validIds.has(id)) {
-        // debug: console.log('deleting');
         const item = this.fileResolveMap.get(id);
         item?.headingEl.removeStickyHeader();
         this.fileResolveMap.delete(id);
