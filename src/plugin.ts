@@ -103,17 +103,50 @@ export default class StickyHeadingsPlugin extends Plugin {
       const item = this.fileResolveMap.get(id || '');
       if (item) {
         const { headings, currentIndex } = item;
-        const modal = new HeadingSuggester(view.app, headings, currentIndex, ({ offset }) => {
+        const modal = new HeadingSuggester(view.app, headings, currentIndex, async ({ offset, index }) => {
+          const height = await this.predictHeadingsHeight(index);
+          console.log(height);
           const scroller = getScroller(view);
           if (this.settings.scrollBehaviour === 'instant') {
-            scroller.scrollTo({ top: offset, behavior: 'instant' });
+            scroller.scrollTo({ top: offset - height - 4, behavior: 'instant' });
           } else {
-            animateScroll(scroller, offset, 1000);
+            animateScroll(scroller, offset - height - 4, 1000);
           }
         });
         modal.open();
       }
     }
+  }
+
+  async predictHeadingsHeight(index: number) {
+    const view = this.app.workspace.getActiveViewOfType(MarkdownView);
+    if (view) {
+      const { id } = view.leaf;
+      if (id) {
+        const item = this.fileResolveMap.get(id);
+        if (item) {
+          const targat = view.contentEl;
+          return new Promise<number>(resolve => {
+            const observer = new MutationObserver(records => {
+              for (const record of records) {
+                if ((record.target as HTMLElement).classList?.contains('sticky-headings-shadow-item')) {
+                  observer.disconnect();
+                  resolve(view.contentEl.querySelector<HTMLElement>('.sticky-headings-shadow')?.clientHeight || 0);
+                }
+              }
+            });
+            observer.observe(targat, {
+              subtree: true,
+              childList: true,
+            });
+            item.headingEl.predictHeadingsHeight(
+              makeExpectedHeadings(item.headings, this.settings.max, this.settings.mode)(index)
+            );
+          });
+        }
+      }
+    }
+    return 0;
   }
 
   async initStickyHeaderComponent() {

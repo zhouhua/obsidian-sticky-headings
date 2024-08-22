@@ -8,14 +8,10 @@ export const defaultSettings = {
   max: 0,
   mode: 'default',
   scrollBehaviour: 'smooth',
-<<<<<<< HEAD
   theme: 'flat',
   showIcon: true,
   autoShowFileName: true,
-||||||| parent of 456ecfa (add setting control for statusbar mode)
-=======
   showInStatusBar: false,
->>>>>>> 456ecfa (add setting control for statusbar mode)
 } satisfies ISetting;
 
 export default class StickyHeadingsSetting extends PluginSettingTab {

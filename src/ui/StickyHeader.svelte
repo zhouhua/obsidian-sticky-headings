@@ -11,12 +11,13 @@
   export let settings: ISetting;
   export let getExpectedHeadings: (clickHeadingIndex: number) => Heading[];
   export let showFileName: boolean;
+  export let expectedHeadings: Heading[] = [];
   let main: HTMLElement;
   let shadow: HTMLElement;
-  let expectedHeadings: Heading[] = [];
   let forceRenderingHeadings: Heading[] | null = null;
 
   const filename = view.getFile()?.basename;
+  export const showIcons: boolean = true;
 
   onMount(() => {
     console.log('mounted svelte component');
@@ -115,7 +116,7 @@
 {/if}
 {#if expectedHeadings.length > 0}
   <div
-    class={`sticky-headings-root sticky-headings-shadow  sticky-headings-theme-${settings.theme}`}
+    class={`sticky-headings-root sticky-headings-shadow sticky-headings-theme-${settings.theme}`}
     bind:this={shadow}
   >
     <div class="sticky-headings-container">
@@ -126,7 +127,7 @@
           </div>
         {/if}
         {#each expectedHeadings as heading}
-          <div class="sticky-headings-item" data-indent-level={0}>
+          <div class="sticky-headings-item sticky-headings-shadow-item" data-indent-level={0}>
             {heading.title}
           </div>
         {/each}

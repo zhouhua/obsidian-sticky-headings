@@ -16,9 +16,14 @@ function hightlight(text: string, matches: SearchMatchPart[]) {
 
 export class HeadingSuggester extends FuzzySuggestModal<Heading> {
   headings: Heading[];
-  onSelect: (heading: Heading) => void;
+  onSelect: (heading: Heading) => Promise<void>;
   currentIndex: number;
-  constructor(app: App, headings: Heading[], currentIndex: number | undefined, onSelect: (heading: Heading) => void) {
+  constructor(
+    app: App,
+    headings: Heading[],
+    currentIndex: number | undefined,
+    onSelect: (heading: Heading) => Promise<void>
+  ) {
     super(app);
     this.headings = headings;
     this.onSelect = onSelect;
