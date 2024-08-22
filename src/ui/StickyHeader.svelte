@@ -44,55 +44,59 @@
   };
 </script>
 
-<div class="sticky-headings-root" bind:this={main}>
-  <div class="sticky-headings-container">
-    {#key headings}
-      {#each headings as heading}
-        <div
-          class="sticky-headings-item"
-          data-indent-level={heading.indentLevel}
-          on:click={() => handleScrollClick(heading)}
-          role="button"
-          tabindex="0"
-          on:keydown={e => {
-            if (e.key === 'Enter') handleScrollClick(heading);
-          }}
-        >
-          {#if showIcons}
-            {#if editMode}
-              {#each { length: heading.level } as _, i}
+{#if headings.length > 0}
+  <div class="sticky-headings-root" bind:this={main}>
+    <div class="sticky-headings-container">
+      {#key headings}
+        {#each headings as heading}
+          <div
+            class="sticky-headings-item"
+            data-indent-level={heading.indentLevel}
+            on:click={() => handleScrollClick(heading)}
+            role="button"
+            tabindex="0"
+            on:keydown={e => {
+              if (e.key === 'Enter') handleScrollClick(heading);
+            }}
+          >
+            {#if showIcons}
+              {#if editMode}
+                {#each { length: heading.level } as _, i}
+                  #
+                {/each}
+              {:else}
+                <div class="sticky-headings-icon">
+                  {@html getIcon(`heading-${heading.level}`)?.outerHTML}
+                </div>
+              {/if}
+            {/if}
+            {heading.title}
+          </div>
+        {/each}
+      {/key}
+    </div>
+  </div>
+{/if}
+{#if expectedHeadings.length > 0}
+  <div class="sticky-headings-root sticky-headings-shadow" bind:this={shadow}>
+    <div class="sticky-headings-container">
+      {#key expectedHeadings}
+        {#each expectedHeadings as heading}
+          <div class="sticky-headings-item" data-indent-level={0}>
+            {#if showIcons}
+              {#if editMode}
                 #
-              {/each}
-            {:else}
-              <div class="sticky-headings-icon">
-                {@html getIcon(`heading-${heading.level}`)?.outerHTML}
-              </div>
+              {:else}
+                <div class="sticky-headings-icon"></div>
+              {/if}
             {/if}
-          {/if}
-          {heading.title}
-        </div>
-      {/each}
-    {/key}
+            {heading.title}
+          </div>
+        {/each}
+      {/key}
+    </div>
   </div>
-</div>
-<div class="sticky-headings-root sticky-headings-shadow" bind:this={shadow}>
-  <div class="sticky-headings-container">
-    {#key expectedHeadings}
-      {#each expectedHeadings as heading}
-        <div class="sticky-headings-item" data-indent-level={0}>
-          {#if showIcons}
-            {#if editMode}
-              #
-            {:else}
-              <div class="sticky-headings-icon"></div>
-            {/if}
-          {/if}
-          {heading.title}
-        </div>
-      {/each}
-    {/key}
-  </div>
-</div>
+{/if}
 
 <style>
   .sticky-headings-root {
