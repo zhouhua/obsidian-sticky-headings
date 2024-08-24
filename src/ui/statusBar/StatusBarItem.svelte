@@ -1,6 +1,6 @@
 <script lang="ts">
   import { MarkdownView, TFile } from 'obsidian';
-  import type { Heading, ISetting } from '../../types';
+  import type { Heading } from '../../types';
   export let heading: Heading | undefined;
   export let view: MarkdownView | undefined;
   export let file: TFile | undefined;

@@ -1,3 +1,5 @@
+<svelte:options accessors={true} />
+
 <script lang="ts">
   import { getIcon, MarkdownView } from 'obsidian';
   import type { Heading, ISetting } from '../types';
@@ -5,6 +7,7 @@
   import { getScroller } from 'src/utils/obsidian';
   import { delay } from '../utils/delay';
   import { animateScroll } from 'src/utils/scroll';
+  import { head, once } from 'lodash';
   export let headings: Heading[];
   export let editMode: boolean;
   export let view: MarkdownView;
