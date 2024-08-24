@@ -1,5 +1,3 @@
-<svelte:options accessors={true} />
-
 <script lang="ts">
   import { getIcon, MarkdownView } from 'obsidian';
   import type { Heading, ISetting } from '../types';
@@ -44,7 +42,7 @@
       forceRenderingHeadings = [...expectedHeadings];
       scrollerSource.scrollTo({ top, behavior: 'instant' });
       // waiting for the throlled scroll to complete, the waiting time should be longer than the throlle wait time.
-      await delay(60);
+      await delay(80);
       headings = forceRenderingHeadings;
       forceRenderingHeadings = null;
     } else {

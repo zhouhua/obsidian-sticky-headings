@@ -46,7 +46,7 @@ export default class StickyHeadingsPlugin extends Plugin {
     await this.loadSettings();
 
     this.registerEvent(
-      this.app.workspace.on('file-open', () => {
+      this.app.workspace.on('active-leaf-change', () => {
         // timeout to wait for cm.editor to load
         setTimeout(() => {
           this.checkFileResolveMap();
@@ -65,32 +65,37 @@ export default class StickyHeadingsPlugin extends Plugin {
     this.addSettingTab(new StickyHeadingsSetting(this.app, this));
   }
 
-  async createStickyHeaderComponent() {
+  async initStickyHeaderComponent() {
     const view = this.app.workspace.getActiveViewOfType(MarkdownView);
     if (view) {
       const { id } = view.leaf;
-      if (id && !this.fileResolveMap.has(id)) {
+      if (id) {
         const file = view.getFile();
         if (file && isMarkdownFile(file)) {
           const headings = await this.retrieveHeadings(file, view);
-          const headingEl = new StickyHeaderComponent(view, this.settings);
-
-          // eslint-disable-next-line @typescript-eslint/no-misused-promises
-          const layoutChangeEvent = this.app.workspace.on('layout-change', this.handleComponentUpdate.bind(this));
-
-          this.fileResolveMap.set(id, {
-            resolve: true,
-            file,
-            container: view.contentEl,
-            view,
-            headings,
-            headingEl,
-            layoutChangeEvent,
-            editMode: isEditSourceMode(view),
-          });
-
-          this.registerEvent(layoutChangeEvent);
-
+          if (!this.fileResolveMap.has(id)) {
+            const headingEl = new StickyHeaderComponent(view, this.settings);
+            // eslint-disable-next-line @typescript-eslint/no-misused-promises
+            const layoutChangeEvent = this.app.workspace.on('layout-change', this.handleComponentUpdate.bind(this));
+            this.fileResolveMap.set(id, {
+              resolve: true,
+              file,
+              container: view.contentEl,
+              view,
+              headings,
+              headingEl,
+              layoutChangeEvent,
+              editMode: isEditSourceMode(view),
+            });
+            this.registerEvent(layoutChangeEvent);
+          } else {
+            const item = this.fileResolveMap.get(id);
+            if (item) {
+              item.editMode = isEditSourceMode(view);
+              item.headings = headings;
+              item.file = file;
+            }
+          }
           await this.handleComponentUpdate();
         }
       }
@@ -198,9 +203,7 @@ export default class StickyHeadingsPlugin extends Plugin {
         const { id } = leaf;
         if (id) {
           validIds.add(id);
-          if (!this.fileResolveMap.has(id)) {
-            this.createStickyHeaderComponent();
-          }
+          this.initStickyHeaderComponent();
         }
       }
     });
