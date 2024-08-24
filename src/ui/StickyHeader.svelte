@@ -1,3 +1,5 @@
+<svelte:options accessors={true} />
+
 <script lang="ts">
   import { getIcon, MarkdownView } from 'obsidian';
   import type { Heading, ISetting } from '../types';
@@ -5,6 +7,7 @@
   import { getScroller } from 'src/utils/obsidian';
   import { delay } from '../utils/delay';
   import { animateScroll } from 'src/utils/scroll';
+  import { head, once } from 'lodash';
   export let headings: Heading[];
   export let editMode: boolean;
   export let view: MarkdownView;
@@ -13,6 +16,7 @@
   let main: HTMLElement;
   let shadow: HTMLElement;
   let expectedHeadings: Heading[] = [];
+  let forceRenderingHeadings: Heading[] | null = null;
   export const showIcons: boolean = true;
 
   onMount(() => {
@@ -28,27 +32,38 @@
     // fixme: Is there a better way to run subsequent code after Shadow has rendered?
     await delay(20);
     // fixme: The expected height should not be the height of Shadow but the offset of the lower boundary of Shadow.
-    return shadow.clientHeight;
+    return shadow?.clientHeight || 0;
   };
 
   const handleScrollClick = async (heading: Heading) => {
     const scrollerSource = getScroller(view);
     const expectedHeight = await calculateExpectedHeight(heading.index);
     const top = heading.offset - expectedHeight;
+    // When jumping, the currently clicked title should not appear in props.headings. This is different from the manual scrolling scenario and needs to be corrected.
     if (settings.scrollBehaviour === 'instant') {
+      forceRenderingHeadings = [...expectedHeadings];
       scrollerSource.scrollTo({ top, behavior: 'instant' });
+      // waiting for the throlled scroll to complete, the waiting time should be longer than the throlle wait time.
+      await delay(60);
+      headings = forceRenderingHeadings;
+      forceRenderingHeadings = null;
     } else {
       // fixme: add easing function;
-      animateScroll(scrollerSource, top, 1000);
+      animateScroll(scrollerSource, top, 1000, undefined, undefined, () => {
+        headings = forceRenderingHeadings || [];
+        forceRenderingHeadings = null;
+      });
+      // A tricky way to suppress the scroll event.
+      forceRenderingHeadings = [...expectedHeadings];
     }
   };
 </script>
 
-{#if headings.length > 0}
+{#if (forceRenderingHeadings || headings).length > 0}
   <div class="sticky-headings-root" bind:this={main}>
     <div class="sticky-headings-container">
-      {#key headings}
-        {#each headings as heading}
+      {#key forceRenderingHeadings || headings}
+        {#each forceRenderingHeadings || headings as heading}
           <div
             class="sticky-headings-item"
             data-indent-level={heading.indentLevel}

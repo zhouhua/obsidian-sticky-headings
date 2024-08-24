@@ -4,7 +4,7 @@ export function animateScroll(
   duration: number,
   easing: (t: number) => number = t => t,
   onUpdate: (t: number) => void = () => {},
-  onComplete: () => void = () => {}
+  onComplete: (...arg: unknown[]) => void = () => {}
 ) {
   let start: number;
   let animationFrame: number;
