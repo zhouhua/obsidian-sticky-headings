@@ -1,50 +1,54 @@
 import StickyHeader from './ui/StickyHeader.svelte';
-import { MarkdownView } from 'obsidian';
-import type { Heading } from './types';
+import type { MarkdownView } from 'obsidian';
+import type { Heading, ISetting } from './types';
 
 export default class StickyHeaderComponent {
-  stickyHeaderComponent!: StickyHeader;
+  stickyHeaderComponents!: [StickyHeader, StickyHeader];
 
-  constructor(view: MarkdownView) {
-    this.addStickyHeader(view);
+  constructor(view: MarkdownView, settings: ISetting) {
+    this.addStickyHeader(view, settings);
   }
 
-  addStickyHeader(view: MarkdownView) {
-    const { contentEl } = view;
-    if (contentEl) {
-      this.stickyHeaderComponent = new StickyHeader({
-        target: contentEl,
+  addStickyHeader(view: MarkdownView, settings: ISetting) {
+    const previewContentEl = view.previewMode.containerEl;
+    const sourceContentEl = view.editMode.editorEl;
+    this.stickyHeaderComponents = [
+      new StickyHeader({
+        target: previewContentEl,
         props: {
           headings: [],
           editMode: false,
-          indentList: [],
           view,
+          getExpectedHeadings: () => [],
+          settings,
         },
-      });
-    }
+      }),
+      new StickyHeader({
+        target: sourceContentEl,
+        props: {
+          headings: [],
+          editMode: false,
+          view,
+          getExpectedHeadings: () => [],
+          settings,
+        },
+      }),
+    ];
   }
 
   removeStickyHeader() {
-    if (this.stickyHeaderComponent) {
-      this.stickyHeaderComponent?.$destroy();
-    }
+    this.stickyHeaderComponents.forEach(conponent => conponent.$destroy());
   }
 
-  updateHeadings(headings: Heading[]) {
-    if (this.stickyHeaderComponent) {
-      this.stickyHeaderComponent.$set({ headings });
-    }
+  updateHeadings(headings: Heading[], getExpectedHeadings: (index: number) => Heading[]) {
+    this.stickyHeaderComponents.forEach(conponent => conponent.$set({ headings, getExpectedHeadings }));
   }
 
   updateEditMode(editMode: boolean) {
-    if (this.stickyHeaderComponent) {
-      this.stickyHeaderComponent.$set({ editMode });
-    }
+    this.stickyHeaderComponents.forEach(conponent => conponent.$set({ editMode }));
   }
 
-  updateIndentList(indentList: number[]) {
-    if (this.stickyHeaderComponent) {
-      this.stickyHeaderComponent.$set({ indentList });
-    }
+  updateSettings(settings: ISetting) {
+    this.stickyHeaderComponents.forEach(conponent => conponent.$set({ settings }));
   }
 }

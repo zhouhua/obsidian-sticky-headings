@@ -21,14 +21,19 @@ export function parseMarkdown(markdown: string, app: App): Promise<string> {
     return Promise.resolve(markdown); // Return the original markdown if rendering is not possible
   }
 
-  return MarkdownRenderer.render(app, markdown, div, '', activeView).then(
-    () => {
-      return div.innerText;
-    }
-  );
+  return MarkdownRenderer.render(app, markdown, div, '', activeView).then(() => {
+    return div.innerText;
+  });
 }
 
-export const isEditSourceMode = (view: MarkdownView) => view.currentMode.type !== 'preview';
+// used to check if we are in source mode AND NOT live preview
+export const isEditSourceMode = (view: MarkdownView) => view.editMode.sourceMode && view.currentMode.type !== 'preview';
+
+// used to check if we are in source mode OR live preview
+export const isEditMode = (view: MarkdownView) => view.currentMode.type !== 'preview';
 
 export const getScroller = (view: MarkdownView) =>
-    isEditSourceMode(view) ? view.editor.cm.scrollDOM: view.previewMode.renderer.previewEl;
+  isEditMode(view) ? view.editor.cm.scrollDOM : view.previewMode.renderer.previewEl;
+
+export const getContainerEl = (el: HTMLElement | Element) =>
+  el.closest('.view-content')?.querySelector('.sticky-headings-root');

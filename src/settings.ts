@@ -1,12 +1,13 @@
 import type StickyHeadingsPlugin from 'main';
-import { PluginSettingTab, App, Setting } from 'obsidian';
-import L from './localisation';
+import type { App } from 'obsidian';
+import { PluginSettingTab, Setting } from 'obsidian';
+import L from './i18n';
 import type { ISetting } from './types';
 
 export const defaultSettings = {
   max: 0,
   mode: 'default',
-  scrollBehaviour: 'auto',
+  scrollBehaviour: 'smooth',
 } satisfies ISetting;
 
 export default class StickyHeadingsSetting extends PluginSettingTab {
@@ -20,6 +21,7 @@ export default class StickyHeadingsSetting extends PluginSettingTab {
   update(data: ISetting) {
     this.plugin.settings = data;
     this.plugin.saveSettings();
+    this.plugin.onSettingChanged();
   }
 
   display(): void {
@@ -28,14 +30,14 @@ export default class StickyHeadingsSetting extends PluginSettingTab {
     new Setting(containerEl)
       .setName(L.setting.mode.title())
       .setDesc(L.setting.mode.description())
-      .addDropdown((dropdown) => {
+      .addDropdown(dropdown => {
         dropdown.addOption('default', L.setting.mode.default());
         dropdown.addOption('concise', L.setting.mode.concise());
         dropdown.setValue(this.plugin.settings.mode);
-        dropdown.onChange((value) => {
+        dropdown.onChange(value => {
           this.update({
             ...this.plugin.settings,
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+
             mode: value as 'default' | 'concise',
           });
         });
@@ -43,12 +45,26 @@ export default class StickyHeadingsSetting extends PluginSettingTab {
     new Setting(containerEl)
       .setName(L.setting.max.title())
       .setDesc(L.setting.max.description())
-      .addText((text) => {
+      .addText(text => {
         text.setValue(this.plugin.settings.max.toString());
-        text.onChange((value) => {
+        text.onChange(value => {
           this.update({
             ...this.plugin.settings,
             max: parseInt(value, 10) || 0,
+          });
+        });
+      });
+    new Setting(containerEl)
+      .setName(L.setting.scrollBehaviour.title())
+      .setDesc(L.setting.scrollBehaviour.description())
+      .addDropdown(dropdown => {
+        dropdown.addOption('smooth', L.setting.scrollBehaviour.smooth());
+        dropdown.addOption('instant', L.setting.scrollBehaviour.instant());
+        dropdown.setValue(this.plugin.settings.scrollBehaviour);
+        dropdown.onChange(value => {
+          this.update({
+            ...this.plugin.settings,
+            scrollBehaviour: value as ScrollBehavior,
           });
         });
       });
