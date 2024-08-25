@@ -111,7 +111,7 @@
   </div>
 {/if}
 
-<style >
+<style>
   .sticky-headings-root {
     position: absolute;
     top: 0;
@@ -195,6 +195,43 @@
     backdrop-filter: blur(12px);
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
+    position: relative;
+    z-index: 2;
+    background: linear-gradient(
+      to bottom,
+      var(--background-primary) 0%,
+      transparent 50%
+    );
+  }
+
+  .sticky-headings-theme-blur .sticky-headings-container::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    background: linear-gradient(
+      135deg,
+      var(--background-primary) 0%,
+      transparent 30%
+    );
+  }
+
+  .sticky-headings-theme-blur .sticky-headings-container::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    right: 0;
+    z-index: -1;
+    background: linear-gradient(
+      35deg,
+      transparent 70%,
+      var(--background-primary) 100%
+    );
   }
 
   .sticky-headings-theme-float.sticky-headings-root {
@@ -208,5 +245,4 @@
     color: #fff;
     padding: 10px 32px;
   }
-
 </style>
