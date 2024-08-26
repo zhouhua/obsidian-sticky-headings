@@ -21,7 +21,11 @@ const en: BaseTranslation = {
     },
     theme: {
       title: 'Theme',
-    }
+    },
+    indicators: {
+      title: 'Display heading indicators',
+      description: 'Toggle to display heading level indicators',
+    },
   },
 };
 

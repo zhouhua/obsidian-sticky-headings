@@ -20,7 +20,11 @@ const zh: Translation = {
     },
     theme: {
       title: '外观主题',
-    }
+    },
+    indicators: {
+      title: '显示标题图标',
+      description: '是否展示标题级别图标',
+    },
   },
 };
 

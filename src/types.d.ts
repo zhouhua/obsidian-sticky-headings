@@ -6,6 +6,7 @@ export interface ISetting {
   mode: 'default' | 'concise';
   theme: string;
   scrollBehaviour: ScrollBehavior;
+  showIcon: boolean;
 }
 
 export interface FileResolveEntry {
