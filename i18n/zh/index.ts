@@ -25,6 +25,11 @@ const zh: Translation = {
       title: '显示标题图标',
       description: '是否展示标题级别图标',
     },
+    autoShowFileName: {
+      title: '自动显示文件名',
+      description:
+        '开启后，如果笔记的第一个标题不是唯一最高级标题，则会额外添加一个以文件名为标题的最高级标题，以达到更好的文档大纲效果。',
+    },
   },
 };
 
