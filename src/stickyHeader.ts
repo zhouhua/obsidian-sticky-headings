@@ -21,6 +21,7 @@ export default class StickyHeaderComponent {
           view,
           getExpectedHeadings: () => [],
           settings,
+          showFileName: false,
         },
       }),
       new StickyHeader({
@@ -31,6 +32,7 @@ export default class StickyHeaderComponent {
           view,
           getExpectedHeadings: () => [],
           settings,
+          showFileName: false,
         },
       }),
     ];
@@ -40,8 +42,15 @@ export default class StickyHeaderComponent {
     this.stickyHeaderComponents.forEach(conponent => conponent.$destroy());
   }
 
-  updateHeadings(headings: Heading[], getExpectedHeadings: (index: number) => Heading[]) {
-    this.stickyHeaderComponents.forEach(conponent => conponent.$set({ headings, getExpectedHeadings }));
+  updateHeadings(
+    headings: Heading[],
+    getExpectedHeadings: (index: number) => Heading[],
+    showFileName: boolean,
+    view: MarkdownView
+  ) {
+    this.stickyHeaderComponents.forEach(conponent =>
+      conponent.$set({ headings, getExpectedHeadings, showFileName, view })
+    );
   }
 
   updateEditMode(editMode: boolean) {

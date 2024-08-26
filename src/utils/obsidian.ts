@@ -37,3 +37,17 @@ export const getScroller = (view: MarkdownView) =>
 
 export const getContainerEl = (el: HTMLElement | Element) =>
   el.closest('.markdown-reading-view, .markdown-source-view')?.querySelector('.sticky-headings-root');
+
+export function needShowFileName(file: TFile, app: App): boolean {
+  const headings = getHeadings(file, app);
+  if (headings.length === 0) {
+    return false;
+  }
+  const firstLevel = headings[0].level;
+  for (let i = 1; i < headings.length; i++) {
+    if (headings[i].level <= firstLevel) {
+      return true;
+    }
+  }
+  return false;
+}

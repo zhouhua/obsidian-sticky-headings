@@ -14,7 +14,7 @@ const en: BaseTranslation = {
       description: 'Maximum number of headings that can be displayed. 0 indicates no limit.',
     },
     scrollBehaviour: {
-      title: 'Scroll Behaviour',
+      title: 'Scroll behaviour',
       description: 'Choose between instant or smooth scrolling behaviour',
       smooth: 'Smooth',
       instant: 'Instant',
@@ -25,6 +25,11 @@ const en: BaseTranslation = {
     indicators: {
       title: 'Display heading indicators',
       description: 'Toggle to display heading level indicators',
+    },
+    autoShowFileName: {
+      title: 'Auto show file name',
+      description:
+        'When enabled, if the first heading in the note is not the unique highest-level title, an additional title with the filename as the highest-level title will be added to achieve a better document outline.',
     },
   },
 };

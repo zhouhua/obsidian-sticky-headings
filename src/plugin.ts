@@ -9,6 +9,7 @@ import {
   getScroller,
   isEditSourceMode,
   isMarkdownFile,
+  needShowFileName,
   parseMarkdown,
 } from './utils/obsidian';
 
@@ -163,7 +164,9 @@ export default class StickyHeadingsPlugin extends Plugin {
           ...heading,
           indentLevel: indentList[i] || 0,
         })),
-        makeExpectedHeadings(headings, this.settings.max, this.settings.mode)
+        makeExpectedHeadings(headings, this.settings.max, this.settings.mode),
+        this.settings.autoShowFileName && needShowFileName(item.file, this.app),
+        item.view
       );
     }
   }

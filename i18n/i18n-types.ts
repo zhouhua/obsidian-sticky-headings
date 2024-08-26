@@ -45,7 +45,7 @@ type RootTranslation = {
 		}
 		scrollBehaviour: {
 			/**
-			 * S​c​r​o​l​l​ ​B​e​h​a​v​i​o​u​r
+			 * S​c​r​o​l​l​ ​b​e​h​a​v​i​o​u​r
 			 */
 			title: string
 			/**
@@ -74,6 +74,16 @@ type RootTranslation = {
 			title: string
 			/**
 			 * T​o​g​g​l​e​ ​t​o​ ​d​i​s​p​l​a​y​ ​h​e​a​d​i​n​g​ ​l​e​v​e​l​ ​i​n​d​i​c​a​t​o​r​s
+			 */
+			description: string
+		}
+		autoShowFileName: {
+			/**
+			 * A​u​t​o​ ​s​h​o​w​ ​f​i​l​e​ ​n​a​m​e
+			 */
+			title: string
+			/**
+			 * W​h​e​n​ ​e​n​a​b​l​e​d​,​ ​i​f​ ​t​h​e​ ​f​i​r​s​t​ ​h​e​a​d​i​n​g​ ​i​n​ ​t​h​e​ ​n​o​t​e​ ​i​s​ ​n​o​t​ ​t​h​e​ ​u​n​i​q​u​e​ ​h​i​g​h​e​s​t​-​l​e​v​e​l​ ​t​i​t​l​e​,​ ​a​n​ ​a​d​d​i​t​i​o​n​a​l​ ​t​i​t​l​e​ ​w​i​t​h​ ​t​h​e​ ​f​i​l​e​n​a​m​e​ ​a​s​ ​t​h​e​ ​h​i​g​h​e​s​t​-​l​e​v​e​l​ ​t​i​t​l​e​ ​w​i​l​l​ ​b​e​ ​a​d​d​e​d​ ​t​o​ ​a​c​h​i​e​v​e​ ​a​ ​b​e​t​t​e​r​ ​d​o​c​u​m​e​n​t​ ​o​u​t​l​i​n​e​.
 			 */
 			description: string
 		}
@@ -112,7 +122,7 @@ export type TranslationFunctions = {
 		}
 		scrollBehaviour: {
 			/**
-			 * Scroll Behaviour
+			 * Scroll behaviour
 			 */
 			title: () => LocalizedString
 			/**
@@ -141,6 +151,16 @@ export type TranslationFunctions = {
 			title: () => LocalizedString
 			/**
 			 * Toggle to display heading level indicators
+			 */
+			description: () => LocalizedString
+		}
+		autoShowFileName: {
+			/**
+			 * Auto show file name
+			 */
+			title: () => LocalizedString
+			/**
+			 * When enabled, if the first heading in the note is not the unique highest-level title, an additional title with the filename as the highest-level title will be added to achieve a better document outline.
 			 */
 			description: () => LocalizedString
 		}

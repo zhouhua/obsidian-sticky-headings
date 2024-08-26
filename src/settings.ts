@@ -10,6 +10,7 @@ export const defaultSettings = {
   scrollBehaviour: 'smooth',
   theme: 'flat',
   showIcon: true,
+  autoShowFileName: true,
 } satisfies ISetting;
 
 export default class StickyHeadingsSetting extends PluginSettingTab {
@@ -92,6 +93,18 @@ export default class StickyHeadingsSetting extends PluginSettingTab {
           this.update({
             ...this.plugin.settings,
             showIcon: value,
+          });
+        });
+      });
+    new Setting(containerEl)
+      .setName(L.setting.autoShowFileName.title())
+      .setDesc(L.setting.autoShowFileName.description())
+      .addToggle(toggle => {
+        toggle.setValue(this.plugin.settings.autoShowFileName);
+        toggle.onChange(value => {
+          this.update({
+            ...this.plugin.settings,
+            autoShowFileName: value,
           });
         });
       });

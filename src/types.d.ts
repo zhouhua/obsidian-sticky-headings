@@ -7,6 +7,7 @@ export interface ISetting {
   theme: string;
   scrollBehaviour: ScrollBehavior;
   showIcon: boolean;
+  autoShowFileName: boolean;
 }
 
 export interface FileResolveEntry {

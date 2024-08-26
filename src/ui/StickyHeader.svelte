@@ -5,16 +5,18 @@
   import { getScroller } from 'src/utils/obsidian';
   import { delay } from '../utils/delay';
   import { animateScroll } from 'src/utils/scroll';
-  import { head, once } from 'lodash';
   export let headings: Heading[];
   export let editMode: boolean;
   export let view: MarkdownView;
   export let settings: ISetting;
   export let getExpectedHeadings: (clickHeadingIndex: number) => Heading[];
+  export let showFileName: boolean;
   let main: HTMLElement;
   let shadow: HTMLElement;
   let expectedHeadings: Heading[] = [];
   let forceRenderingHeadings: Heading[] | null = null;
+
+  const filename = view.getFile()?.basename;
 
   onMount(() => {
     console.log('mounted svelte component');
@@ -32,10 +34,8 @@
     return shadow?.clientHeight || 0;
   };
 
-  const handleScrollClick = async (heading: Heading) => {
+  const scrollTo = async (top: number) => {
     const scrollerSource = getScroller(view);
-    const expectedHeight = await calculateExpectedHeight(heading.index);
-    const top = heading.offset - expectedHeight;
     // When jumping, the currently clicked title should not appear in props.headings. This is different from the manual scrolling scenario and needs to be corrected.
     if (settings.scrollBehaviour === 'instant') {
       forceRenderingHeadings = [...expectedHeadings];
@@ -54,16 +54,40 @@
       forceRenderingHeadings = [...expectedHeadings];
     }
   };
+
+  const handleScrollClick = async (heading: Heading) => {
+    const expectedHeight = await calculateExpectedHeight(heading.index);
+    const top = heading.offset - expectedHeight;
+    scrollTo(top);
+  };
 </script>
 
 {#if (forceRenderingHeadings || headings).length > 0}
   <div class={`sticky-headings-root sticky-headings-theme-${settings.theme}`} bind:this={main}>
     <div class="sticky-headings-container">
       {#key forceRenderingHeadings || headings}
+        {#if showFileName && filename}
+          <div
+            class="sticky-headings-item"
+            on:click={() => scrollTo(0)}
+            role="button"
+            tabindex="0"
+            on:keydown={e => {
+              if (e.key === 'Enter') scrollTo(0);
+            }}
+          >
+            {#if settings.showIcon}
+              <div class="sticky-headings-icon">
+                {@html getIcon('heading')?.outerHTML}
+              </div>
+            {/if}
+            {filename}
+          </div>
+        {/if}
         {#each forceRenderingHeadings || headings as heading}
           <div
             class="sticky-headings-item"
-            data-indent-level={heading.indentLevel}
+            data-indent-level={heading.indentLevel + (showFileName ? 1 : 0)}
             on:click={() => handleScrollClick(heading)}
             role="button"
             tabindex="0"
@@ -96,15 +120,13 @@
   >
     <div class="sticky-headings-container">
       {#key expectedHeadings}
+        {#if showFileName && filename}
+          <div class="sticky-headings-item">
+            {filename}
+          </div>
+        {/if}
         {#each expectedHeadings as heading}
           <div class="sticky-headings-item" data-indent-level={0}>
-            {#if settings.showIcon}
-              {#if editMode}
-                #
-              {:else}
-                <div class="sticky-headings-icon"></div>
-              {/if}
-            {/if}
             {heading.title}
           </div>
         {/each}
@@ -181,6 +203,10 @@
 
   .sticky-headings-item[data-indent-level='5'] {
     padding-left: calc(var(--sticky-header-indent-width) * 5);
+  }
+
+  .sticky-headings-item[data-indent-level='6'] {
+    padding-left: calc(var(--sticky-header-indent-width) * 6);
   }
 
   .sticky-headings-theme-flat .sticky-headings-container {
