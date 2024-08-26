@@ -4,19 +4,47 @@ name: Sticky Headings
 id: sticky-headings
 settings:
     -
-        id: indent-width
+        id: sticky-header-indent-width
         title: Indent width
         description: The indentation width in em units
         type: variable-number
         default: 1
         format: rem
 
+    -
+        id: sticky-header-verticle-offset
+        title: verticle offset
+        description: The verticle offset in px units
+        type: variable-number
+        default: 0
+        format: px
+
+    -
+        id: sticky-header-float-background-color
+        title: float theme background color
+        description: The float theme background color
+        type: variable-color
+        opacity: true
+        default: #000
+        format: rgb
+    -
+        id: sticky-header-float-text-color
+        title: float theme text color
+        description: The float theme text color
+        type: variable-color
+        opacity: true
+        default: #fff
+        format: rgb
+
 */
 
 :root {
-	--indent-width: 1em;
+  --sticky-header-indent-width: 1em;
+  --sticky-header-verticle-offset: 0px;
+  --sticky-header-float-background-color: #000;
+  --sticky-header-float-text-color: #fff;
 }
 
 .view-content {
-	position: relative;
+  position: relative;
 }

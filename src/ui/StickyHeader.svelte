@@ -91,7 +91,10 @@
   </div>
 {/if}
 {#if expectedHeadings.length > 0}
-  <div class="sticky-headings-root sticky-headings-shadow" bind:this={shadow}>
+  <div
+    class={`sticky-headings-root sticky-headings-shadow  sticky-headings-theme-${settings.theme}`}
+    bind:this={shadow}
+  >
     <div class="sticky-headings-container">
       {#key expectedHeadings}
         {#each expectedHeadings as heading}
@@ -112,15 +115,9 @@
 {/if}
 
 <style>
-  .sticky-headings-root {
-    position: absolute;
-    top: 0;
-    width: 100%;
-  }
-
   .sticky-headings-shadow {
-    opacity: 0;
-    pointer-events: none;
+    opacity: 0 !important;
+    pointer-events: none !important;
   }
 
   .sticky-headings-container {
@@ -136,6 +133,7 @@
     width: 100%;
     padding: 0 var(--file-margins);
     z-index: 1;
+    padding-top: var(--sticky-header-verticle-offset);
   }
 
   .sticky-headings-container {
@@ -167,23 +165,23 @@
   }
 
   .sticky-headings-item[data-indent-level='1'] {
-    padding-left: var(--indent-width);
+    padding-left: var(--sticky-header-indent-width);
   }
 
   .sticky-headings-item[data-indent-level='2'] {
-    padding-left: calc(var(--indent-width) * 2);
+    padding-left: calc(var(--sticky-header-indent-width) * 2);
   }
 
   .sticky-headings-item[data-indent-level='3'] {
-    padding-left: calc(var(--indent-width) * 3);
+    padding-left: calc(var(--sticky-header-indent-width) * 3);
   }
 
   .sticky-headings-item[data-indent-level='4'] {
-    padding-left: calc(var(--indent-width) * 4);
+    padding-left: calc(var(--sticky-header-indent-width) * 4);
   }
 
   .sticky-headings-item[data-indent-level='5'] {
-    padding-left: calc(var(--indent-width) * 5);
+    padding-left: calc(var(--sticky-header-indent-width) * 5);
   }
 
   .sticky-headings-theme-flat .sticky-headings-container {
@@ -236,13 +234,14 @@
 
   .sticky-headings-theme-float.sticky-headings-root {
     padding: 10px 20%;
+    padding-top: calc(var(--sticky-header-verticle-offset) + 10px);
     padding-bottom: 0;
   }
 
   .sticky-headings-theme-float .sticky-headings-container {
     border-radius: 32px;
-    background-color: #000;
-    color: #fff;
+    background-color: var(--sticky-header-float-background-color);
+    color: var(--sticky-header-float-text-color);
     padding: 10px 32px;
   }
 </style>
