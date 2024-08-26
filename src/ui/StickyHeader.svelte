@@ -15,7 +15,6 @@
   let shadow: HTMLElement;
   let expectedHeadings: Heading[] = [];
   let forceRenderingHeadings: Heading[] | null = null;
-  export const showIcons: boolean = true;
 
   onMount(() => {
     console.log('mounted svelte component');
@@ -72,7 +71,7 @@
               if (e.key === 'Enter') handleScrollClick(heading);
             }}
           >
-            {#if showIcons}
+            {#if settings.showIcon}
               {#if editMode}
                 {#each { length: heading.level } as _, i}
                   #
@@ -99,7 +98,7 @@
       {#key expectedHeadings}
         {#each expectedHeadings as heading}
           <div class="sticky-headings-item" data-indent-level={0}>
-            {#if showIcons}
+            {#if settings.showIcon}
               {#if editMode}
                 #
               {:else}
@@ -195,11 +194,7 @@
     border-bottom-right-radius: 8px;
     position: relative;
     z-index: 2;
-    background: linear-gradient(
-      to bottom,
-      var(--background-primary) 0%,
-      transparent 50%
-    );
+    background: linear-gradient(to bottom, var(--background-primary) 0%, transparent 50%);
   }
 
   .sticky-headings-theme-blur .sticky-headings-container::before {
@@ -210,11 +205,7 @@
     top: 0;
     left: 0;
     z-index: -1;
-    background: linear-gradient(
-      135deg,
-      var(--background-primary) 0%,
-      transparent 30%
-    );
+    background: linear-gradient(135deg, var(--background-primary) 0%, transparent 30%);
   }
 
   .sticky-headings-theme-blur .sticky-headings-container::after {
@@ -225,11 +216,7 @@
     top: 0;
     right: 0;
     z-index: -1;
-    background: linear-gradient(
-      35deg,
-      transparent 70%,
-      var(--background-primary) 100%
-    );
+    background: linear-gradient(35deg, transparent 70%, var(--background-primary) 100%);
   }
 
   .sticky-headings-theme-float.sticky-headings-root {

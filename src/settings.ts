@@ -9,6 +9,7 @@ export const defaultSettings = {
   mode: 'default',
   scrollBehaviour: 'smooth',
   theme: 'flat',
+  showIcon: true,
 } satisfies ISetting;
 
 export default class StickyHeadingsSetting extends PluginSettingTab {
@@ -69,18 +70,28 @@ export default class StickyHeadingsSetting extends PluginSettingTab {
           });
         });
       });
+    new Setting(containerEl).setName(L.setting.theme.title()).addDropdown(dropdown => {
+      dropdown.addOption('flat', 'flat');
+      dropdown.addOption('blur', 'blur');
+      dropdown.addOption('float', 'float');
+      dropdown.setValue(this.plugin.settings.theme);
+      dropdown.onChange(value => {
+        this.update({
+          ...this.plugin.settings,
+
+          theme: value,
+        });
+      });
+    });
     new Setting(containerEl)
-      .setName(L.setting.theme.title())
-      .addDropdown(dropdown => {
-        dropdown.addOption('flat', 'flat');
-        dropdown.addOption('blur', 'blur');
-        dropdown.addOption('float', 'float');
-        dropdown.setValue(this.plugin.settings.theme);
-        dropdown.onChange(value => {
+      .setName(L.setting.indicators.title())
+      .setDesc(L.setting.indicators.description())
+      .addToggle(toggle => {
+        toggle.setValue(this.plugin.settings.showIcon);
+        toggle.onChange(value => {
           this.update({
             ...this.plugin.settings,
-
-            theme: value,
+            showIcon: value,
           });
         });
       });

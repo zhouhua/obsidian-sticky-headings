@@ -67,6 +67,16 @@ type RootTranslation = {
 			 */
 			title: string
 		}
+		indicators: {
+			/**
+			 * D​i​s​p​l​a​y​ ​h​e​a​d​i​n​g​ ​i​n​d​i​c​a​t​o​r​s
+			 */
+			title: string
+			/**
+			 * T​o​g​g​l​e​ ​t​o​ ​d​i​s​p​l​a​y​ ​h​e​a​d​i​n​g​ ​l​e​v​e​l​ ​i​n​d​i​c​a​t​o​r​s
+			 */
+			description: string
+		}
 	}
 }
 
@@ -123,6 +133,16 @@ export type TranslationFunctions = {
 			 * Theme
 			 */
 			title: () => LocalizedString
+		}
+		indicators: {
+			/**
+			 * Display heading indicators
+			 */
+			title: () => LocalizedString
+			/**
+			 * Toggle to display heading level indicators
+			 */
+			description: () => LocalizedString
 		}
 	}
 }
