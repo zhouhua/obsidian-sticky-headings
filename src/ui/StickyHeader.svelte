@@ -58,7 +58,7 @@
 </script>
 
 {#if (forceRenderingHeadings || headings).length > 0}
-  <div class="sticky-headings-root" bind:this={main}>
+  <div class={`sticky-headings-root sticky-headings-theme-${settings.theme}`} bind:this={main}>
     <div class="sticky-headings-container">
       {#key forceRenderingHeadings || headings}
         {#each forceRenderingHeadings || headings as heading}
@@ -91,7 +91,10 @@
   </div>
 {/if}
 {#if expectedHeadings.length > 0}
-  <div class="sticky-headings-root sticky-headings-shadow" bind:this={shadow}>
+  <div
+    class={`sticky-headings-root sticky-headings-shadow  sticky-headings-theme-${settings.theme}`}
+    bind:this={shadow}
+  >
     <div class="sticky-headings-container">
       {#key expectedHeadings}
         {#each expectedHeadings as heading}
@@ -112,21 +115,14 @@
 {/if}
 
 <style>
-  .sticky-headings-root {
-    position: absolute;
-    top: 0;
-    width: 100%;
-  }
-
   .sticky-headings-shadow {
-    opacity: 0;
-    pointer-events: none;
+    opacity: 0 !important;
+    pointer-events: none !important;
   }
 
   .sticky-headings-container {
     max-width: var(--file-line-width);
     margin: 0 auto;
-    background-color: var(--background-primary);
   }
 
   .sticky-headings-root {
@@ -137,6 +133,7 @@
     width: 100%;
     padding: 0 var(--file-margins);
     z-index: 1;
+    padding-top: var(--sticky-header-verticle-offset);
   }
 
   .sticky-headings-container {
@@ -168,26 +165,83 @@
   }
 
   .sticky-headings-item[data-indent-level='1'] {
-    padding-left: var(--indent-width);
+    padding-left: var(--sticky-header-indent-width);
   }
 
   .sticky-headings-item[data-indent-level='2'] {
-    padding-left: calc(var(--indent-width) * 2);
+    padding-left: calc(var(--sticky-header-indent-width) * 2);
   }
 
   .sticky-headings-item[data-indent-level='3'] {
-    padding-left: calc(var(--indent-width) * 3);
+    padding-left: calc(var(--sticky-header-indent-width) * 3);
   }
 
   .sticky-headings-item[data-indent-level='4'] {
-    padding-left: calc(var(--indent-width) * 4);
+    padding-left: calc(var(--sticky-header-indent-width) * 4);
   }
 
   .sticky-headings-item[data-indent-level='5'] {
-    padding-left: calc(var(--indent-width) * 5);
+    padding-left: calc(var(--sticky-header-indent-width) * 5);
   }
 
-  .sticky-headings-item:last-of-type {
-    padding-bottom: 5px;
+  .sticky-headings-theme-flat .sticky-headings-container {
+    background-color: var(--background-primary);
+  }
+
+  .sticky-headings-theme-blur .sticky-headings-container {
+    padding: 12px;
+    backdrop-filter: blur(12px);
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    position: relative;
+    z-index: 2;
+    background: linear-gradient(
+      to bottom,
+      var(--background-primary) 0%,
+      transparent 50%
+    );
+  }
+
+  .sticky-headings-theme-blur .sticky-headings-container::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    background: linear-gradient(
+      135deg,
+      var(--background-primary) 0%,
+      transparent 30%
+    );
+  }
+
+  .sticky-headings-theme-blur .sticky-headings-container::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    right: 0;
+    z-index: -1;
+    background: linear-gradient(
+      35deg,
+      transparent 70%,
+      var(--background-primary) 100%
+    );
+  }
+
+  .sticky-headings-theme-float.sticky-headings-root {
+    padding: 10px 20%;
+    padding-top: calc(var(--sticky-header-verticle-offset) + 10px);
+    padding-bottom: 0;
+  }
+
+  .sticky-headings-theme-float .sticky-headings-container {
+    border-radius: 32px;
+    background-color: var(--sticky-header-float-background-color);
+    color: var(--sticky-header-float-text-color);
+    padding: 10px 32px;
   }
 </style>

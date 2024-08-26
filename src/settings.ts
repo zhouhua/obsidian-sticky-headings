@@ -8,6 +8,7 @@ export const defaultSettings = {
   max: 0,
   mode: 'default',
   scrollBehaviour: 'smooth',
+  theme: 'flat',
 } satisfies ISetting;
 
 export default class StickyHeadingsSetting extends PluginSettingTab {
@@ -65,6 +66,21 @@ export default class StickyHeadingsSetting extends PluginSettingTab {
           this.update({
             ...this.plugin.settings,
             scrollBehaviour: value as ScrollBehavior,
+          });
+        });
+      });
+    new Setting(containerEl)
+      .setName(L.setting.theme.title())
+      .addDropdown(dropdown => {
+        dropdown.addOption('flat', 'flat');
+        dropdown.addOption('blur', 'blur');
+        dropdown.addOption('float', 'float');
+        dropdown.setValue(this.plugin.settings.theme);
+        dropdown.onChange(value => {
+          this.update({
+            ...this.plugin.settings,
+
+            theme: value,
           });
         });
       });

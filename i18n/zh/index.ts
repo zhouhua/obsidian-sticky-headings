@@ -18,6 +18,9 @@ const zh: Translation = {
       smooth: '平滑滚动',
       instant: '即时滚动',
     },
+    theme: {
+      title: '外观主题',
+    }
   },
 };
 

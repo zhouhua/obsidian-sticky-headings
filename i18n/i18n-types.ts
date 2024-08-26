@@ -61,6 +61,12 @@ type RootTranslation = {
 			 */
 			instant: string
 		}
+		theme: {
+			/**
+			 * T​h​e​m​e
+			 */
+			title: string
+		}
 	}
 }
 
@@ -111,6 +117,12 @@ export type TranslationFunctions = {
 			 * Instant
 			 */
 			instant: () => LocalizedString
+		}
+		theme: {
+			/**
+			 * Theme
+			 */
+			title: () => LocalizedString
 		}
 	}
 }

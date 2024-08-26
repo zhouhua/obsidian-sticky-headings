@@ -4,6 +4,7 @@ import type StickyHeaderComponent from './stickyHeader';
 export interface ISetting {
   max: number;
   mode: 'default' | 'concise';
+  theme: string;
   scrollBehaviour: ScrollBehavior;
 }
 
