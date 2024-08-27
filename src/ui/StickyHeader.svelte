@@ -142,8 +142,9 @@
   }
 
   .sticky-headings-container {
-    max-width: var(--file-line-width);
+    max-width: min(var(--file-line-width), var(--max-width));
     margin: 0 auto;
+    font-size: 12px;
   }
 
   .sticky-headings-root {
@@ -155,12 +156,6 @@
     padding: 0 var(--file-margins);
     z-index: 1;
     padding-top: var(--sticky-header-verticle-offset);
-  }
-
-  .sticky-headings-container {
-    font-size: 12px;
-    margin: 0 auto;
-    max-width: var(--file-line-width);
   }
 
   .sticky-headings-item {
