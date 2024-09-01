@@ -117,27 +117,22 @@
     </div>
   </div>
 {/if}
-{#if expectedHeadings.length > 0}
-  <div
-    class={`sticky-headings-root sticky-headings-shadow sticky-headings-theme-${settings.theme}`}
-    bind:this={shadow}
-  >
-    <div class="sticky-headings-container">
-      {#key expectedHeadings}
-        {#if showFileName && filename}
-          <div class="sticky-headings-item">
-            {filename}
-          </div>
-        {/if}
-        {#each expectedHeadings as heading}
-          <div class="sticky-headings-item sticky-headings-shadow-item" data-indent-level={0}>
-            {heading.title}
-          </div>
-        {/each}
-      {/key}
-    </div>
+<div class={`sticky-headings-root sticky-headings-shadow sticky-headings-theme-${settings.theme}`} bind:this={shadow}>
+  <div class="sticky-headings-container">
+    {#key expectedHeadings}
+      {#if showFileName && filename}
+        <div class="sticky-headings-item">
+          {filename}
+        </div>
+      {/if}
+      {#each expectedHeadings as heading}
+        <div class="sticky-headings-item sticky-headings-shadow-item" data-indent-level={0}>
+          {heading.title}
+        </div>
+      {/each}
+    {/key}
   </div>
-{/if}
+</div>
 
 <style>
   .sticky-headings-shadow {

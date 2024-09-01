@@ -11,7 +11,7 @@ export function makeExpectedHeadings(
     const result: Heading[] = [];
     trivial(subHeadings, result, mode);
     if (max) {
-      result.slice(-max);
+      return result.slice(-max);
     }
     return result;
   };

@@ -7,6 +7,7 @@ import {
   getContainerEl,
   getHeadings,
   getScroller,
+  isEditMode,
   isEditSourceMode,
   isMarkdownFile,
   needShowFileName,
@@ -124,17 +125,19 @@ export default class StickyHeadingsPlugin extends Plugin {
       if (id) {
         const item = this.fileResolveMap.get(id);
         if (item) {
-          const targat = view.contentEl;
+          const target = (isEditMode(view) ? view.editMode.editorEl : view.previewMode.containerEl).find(
+            '.sticky-headings-shadow'
+          );
           return new Promise<number>(resolve => {
             const observer = new MutationObserver(records => {
               for (const record of records) {
                 if ((record.target as HTMLElement).classList?.contains('sticky-headings-shadow-item')) {
                   observer.disconnect();
-                  resolve(view.contentEl.querySelector<HTMLElement>('.sticky-headings-shadow')?.clientHeight || 0);
+                  resolve(target.clientHeight || 0);
                 }
               }
             });
-            observer.observe(targat, {
+            observer.observe(target, {
               subtree: true,
               childList: true,
             });
@@ -148,40 +151,37 @@ export default class StickyHeadingsPlugin extends Plugin {
     return 0;
   }
 
-  async initStickyHeaderComponent() {
-    const view = this.app.workspace.getActiveViewOfType(MarkdownView);
-    if (view) {
-      const { id } = view.leaf;
-      if (id) {
-        const file = view.getFile();
-        if (file && isMarkdownFile(file)) {
-          const headings = await this.retrieveHeadings(file, view);
-          if (!this.fileResolveMap.has(id)) {
-            const headingEl = new StickyHeaderComponent(view, this.settings);
-            // eslint-disable-next-line @typescript-eslint/no-misused-promises
-            const layoutChangeEvent = this.app.workspace.on('layout-change', this.handleComponentUpdate.bind(this));
-            this.fileResolveMap.set(id, {
-              resolve: true,
-              file,
-              container: view.contentEl,
-              view,
-              headings,
-              headingEl,
-              layoutChangeEvent,
-              editMode: isEditSourceMode(view),
-              currentIndex: -1,
-            });
-            this.registerEvent(layoutChangeEvent);
-          } else {
-            const item = this.fileResolveMap.get(id);
-            if (item) {
-              item.editMode = isEditSourceMode(view);
-              item.headings = headings;
-              item.file = file;
-            }
+  async initStickyHeaderComponent(view: MarkdownView) {
+    const { id } = view.leaf;
+    if (id) {
+      const file = view.getFile();
+      if (file && isMarkdownFile(file)) {
+        const headings = await this.retrieveHeadings(file, view);
+        if (!this.fileResolveMap.has(id)) {
+          const headingEl = new StickyHeaderComponent(view, this.settings);
+          // eslint-disable-next-line @typescript-eslint/no-misused-promises
+          const layoutChangeEvent = this.app.workspace.on('layout-change', this.handleComponentUpdate.bind(this, view));
+          this.fileResolveMap.set(id, {
+            resolve: true,
+            file,
+            container: view.contentEl,
+            view,
+            headings,
+            headingEl,
+            layoutChangeEvent,
+            editMode: isEditSourceMode(view),
+            currentIndex: -1,
+          });
+          this.registerEvent(layoutChangeEvent);
+        } else {
+          const item = this.fileResolveMap.get(id);
+          if (item) {
+            item.editMode = isEditSourceMode(view);
+            item.headings = headings;
+            item.file = file;
           }
-          await this.handleComponentUpdate();
         }
+        await this.handleComponentUpdate(view);
       }
     }
   }
@@ -192,40 +192,37 @@ export default class StickyHeadingsPlugin extends Plugin {
     return item.headings;
   }
 
-  async handleComponentUpdate() {
-    const view = this.app.workspace.getActiveViewOfType(MarkdownView);
-    if (view) {
-      const scroller = getScroller(view);
-      const { id } = view.leaf;
-      if (id) {
-        const item = this.fileResolveMap.get(id);
-        if (item) {
-          // Remove existing scroll listener if it exists
-          if (item.scrollListener && item.view.contentEl) {
-            item.view.contentEl.removeEventListener('scroll', item.scrollListener, true);
-          }
-
-          item.editMode = isEditSourceMode(item.view);
-          item.headingEl.updateEditMode(isEditSourceMode(item.view));
-
-          if (scroller) {
-            await this.setHeadingsInView(scroller, item);
-            // Create new scroll listener
-            const newScrollListener = (event: Event) => {
-              this.detectPosition(event, scroller, item);
-            };
-            item.view.contentEl.addEventListener('scroll', newScrollListener, true);
-
-            // Update the fileResolveMap with the new scroll listener
-            item.scrollListener = newScrollListener;
-            this.fileResolveMap.set(id, item);
-          } else {
-            // If there's no scroller, ensure we remove any existing listener
-            item.scrollListener = null;
-            this.fileResolveMap.set(id, item);
-          }
-          this.updateHeadings(item.file, item.view, item);
+  async handleComponentUpdate(view: MarkdownView) {
+    const scroller = getScroller(view);
+    const { id } = view.leaf;
+    if (id) {
+      const item = this.fileResolveMap.get(id);
+      if (item) {
+        // Remove existing scroll listener if it exists
+        if (item.scrollListener && item.view.contentEl) {
+          item.view.contentEl.removeEventListener('scroll', item.scrollListener, true);
         }
+
+        item.editMode = isEditSourceMode(item.view);
+        item.headingEl.updateEditMode(isEditSourceMode(item.view));
+
+        if (scroller) {
+          await this.setHeadingsInView(scroller, item);
+          // Create new scroll listener
+          const newScrollListener = (event: Event) => {
+            this.detectPosition(event, scroller, item);
+          };
+          item.view.contentEl.addEventListener('scroll', newScrollListener, true);
+
+          // Update the fileResolveMap with the new scroll listener
+          item.scrollListener = newScrollListener;
+          this.fileResolveMap.set(id, item);
+        } else {
+          // If there's no scroller, ensure we remove any existing listener
+          item.scrollListener = null;
+          this.fileResolveMap.set(id, item);
+        }
+        this.updateHeadings(item.file, item.view, item);
       }
     }
   }
@@ -294,7 +291,7 @@ export default class StickyHeadingsPlugin extends Plugin {
         const { id } = leaf;
         if (id) {
           validIds.add(id);
-          this.initStickyHeaderComponent();
+          this.initStickyHeaderComponent(leaf.view);
         }
       }
     });
