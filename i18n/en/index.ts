@@ -31,6 +31,7 @@ const en: BaseTranslation = {
       description:
         'When enabled, if the first heading in the note is not the unique highest-level title, an additional title with the filename as the highest-level title will be added to achieve a better document outline.',
     },
+    showInStatusBar: 'Show in status bar',
   },
 };
 

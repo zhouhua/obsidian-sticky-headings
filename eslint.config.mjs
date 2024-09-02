@@ -117,6 +117,7 @@ export default tseslint.config(
       ],
       '@stylistic/comma-dangle': 'off',
       '@stylistic/brace-style': 'off',
+      '@stylistic/operator-linebreak': 'off',
       '@typescript-eslint/no-unused-vars': ['error', { args: 'none' }],
       '@typescript-eslint/adjacent-overload-signatures': 'error',
       '@typescript-eslint/consistent-indexed-object-style': 'error',

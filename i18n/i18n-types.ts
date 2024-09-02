@@ -87,6 +87,10 @@ type RootTranslation = {
 			 */
 			description: string
 		}
+		/**
+		 * S​h​o​w​ ​i​n​ ​s​t​a​t​u​s​ ​b​a​r
+		 */
+		showInStatusBar: string
 	}
 }
 
@@ -164,6 +168,10 @@ export type TranslationFunctions = {
 			 */
 			description: () => LocalizedString
 		}
+		/**
+		 * Show in status bar
+		 */
+		showInStatusBar: () => LocalizedString
 	}
 }
 

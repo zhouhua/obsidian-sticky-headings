@@ -22,6 +22,7 @@ export default class StickyHeaderComponent {
           getExpectedHeadings: () => [],
           settings,
           showFileName: false,
+          expectedHeadings: [],
         },
       }),
       new StickyHeader({
@@ -33,6 +34,7 @@ export default class StickyHeaderComponent {
           getExpectedHeadings: () => [],
           settings,
           showFileName: false,
+          expectedHeadings: [],
         },
       }),
     ];
@@ -51,6 +53,10 @@ export default class StickyHeaderComponent {
     this.stickyHeaderComponents.forEach(conponent =>
       conponent.$set({ headings, getExpectedHeadings, showFileName, view })
     );
+  }
+
+  predictHeadingsHeight(headings: Heading[]) {
+    this.stickyHeaderComponents.forEach(component => component.$set({ expectedHeadings: headings }));
   }
 
   updateEditMode(editMode: boolean) {
