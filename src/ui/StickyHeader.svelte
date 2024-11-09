@@ -19,11 +19,11 @@
   const filename = view.getFile()?.basename;
 
   onMount(() => {
-    console.log('mounted svelte component');
+    console.debug('mounted svelte component');
   });
 
   onDestroy(() => {
-    console.log('destroyed');
+    console.debug('destroyed');
   });
 
   const calculateExpectedHeight = async (index: number) => {
