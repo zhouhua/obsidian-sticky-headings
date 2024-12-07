@@ -22,7 +22,7 @@ export function parseMarkdown(markdown: string, app: App): Promise<string> {
   }
 
   return MarkdownRenderer.render(app, markdown, div, '', activeView).then(() => {
-    return div.innerText;
+    return div.innerHTML;
   });
 }
 

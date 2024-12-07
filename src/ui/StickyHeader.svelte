@@ -7,7 +7,6 @@
   import { getScroller } from 'src/utils/obsidian';
   import { delay } from '../utils/delay';
   import { animateScroll } from 'src/utils/scroll';
-  import { head, once } from 'lodash';
   export let headings: Heading[];
   export let editMode: boolean;
   export let view: MarkdownView;
@@ -110,7 +109,7 @@
                 </div>
               {/if}
             {/if}
-            {heading.title}
+            {@html heading.title}
           </div>
         {/each}
       {/key}
@@ -127,7 +126,7 @@
       {/if}
       {#each expectedHeadings as heading}
         <div class="sticky-headings-item sticky-headings-shadow-item" data-indent-level={0}>
-          {heading.title}
+          {@html heading.title}
         </div>
       {/each}
     {/key}
@@ -165,6 +164,10 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     cursor: var(--cursor-link);
+  }
+
+  .sticky-headings-item :global(p) {
+    margin: 0 !important;
   }
 
   .sticky-headings-icon {
