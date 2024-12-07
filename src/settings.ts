@@ -11,6 +11,7 @@ export const defaultSettings = {
   theme: 'flat',
   showIcon: true,
   autoShowFileName: true,
+  showInStatusBar: false,
 } satisfies ISetting;
 
 export default class StickyHeadingsSetting extends PluginSettingTab {
@@ -108,5 +109,14 @@ export default class StickyHeadingsSetting extends PluginSettingTab {
           });
         });
       });
+    new Setting(containerEl).setName(L.setting.showInStatusBar()).addToggle(toggle => {
+      toggle.setValue(this.plugin.settings.showInStatusBar);
+      toggle.onChange(value => {
+        this.update({
+          ...this.plugin.settings,
+          showInStatusBar: value,
+        });
+      });
+    });
   }
 }

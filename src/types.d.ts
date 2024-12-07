@@ -8,6 +8,7 @@ export interface ISetting {
   scrollBehaviour: ScrollBehavior;
   showIcon: boolean;
   autoShowFileName: boolean;
+  showInStatusBar: boolean;
 }
 
 export interface FileResolveEntry {
@@ -20,6 +21,7 @@ export interface FileResolveEntry {
   layoutChangeEvent: EventRef;
   scrollListener?: ((event: Event) => void) | null;
   editMode: boolean;
+  currentIndex: number;
 }
 
 export interface Heading extends HeadingCache {

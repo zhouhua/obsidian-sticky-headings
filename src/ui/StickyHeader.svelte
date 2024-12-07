@@ -1,3 +1,5 @@
+<svelte:options accessors={true} />
+
 <script lang="ts">
   import { getIcon, MarkdownView } from 'obsidian';
   import type { Heading, ISetting } from '../types';
@@ -5,18 +7,20 @@
   import { getScroller } from 'src/utils/obsidian';
   import { delay } from '../utils/delay';
   import { animateScroll } from 'src/utils/scroll';
+  import { head, once } from 'lodash';
   export let headings: Heading[];
   export let editMode: boolean;
   export let view: MarkdownView;
   export let settings: ISetting;
   export let getExpectedHeadings: (clickHeadingIndex: number) => Heading[];
   export let showFileName: boolean;
+  export let expectedHeadings: Heading[] = [];
   let main: HTMLElement;
   let shadow: HTMLElement;
-  let expectedHeadings: Heading[] = [];
   let forceRenderingHeadings: Heading[] | null = null;
 
   const filename = view.getFile()?.basename;
+  export const showIcons: boolean = true;
 
   onMount(() => {
     console.debug('mounted svelte component');
@@ -113,27 +117,22 @@
     </div>
   </div>
 {/if}
-{#if expectedHeadings.length > 0}
-  <div
-    class={`sticky-headings-root sticky-headings-shadow  sticky-headings-theme-${settings.theme}`}
-    bind:this={shadow}
-  >
-    <div class="sticky-headings-container">
-      {#key expectedHeadings}
-        {#if showFileName && filename}
-          <div class="sticky-headings-item">
-            {filename}
-          </div>
-        {/if}
-        {#each expectedHeadings as heading}
-          <div class="sticky-headings-item" data-indent-level={0}>
-            {heading.title}
-          </div>
-        {/each}
-      {/key}
-    </div>
+<div class={`sticky-headings-root sticky-headings-shadow sticky-headings-theme-${settings.theme}`} bind:this={shadow}>
+  <div class="sticky-headings-container">
+    {#key expectedHeadings}
+      {#if showFileName && filename}
+        <div class="sticky-headings-item">
+          {filename}
+        </div>
+      {/if}
+      {#each expectedHeadings as heading}
+        <div class="sticky-headings-item sticky-headings-shadow-item" data-indent-level={0}>
+          {heading.title}
+        </div>
+      {/each}
+    {/key}
   </div>
-{/if}
+</div>
 
 <style>
   .sticky-headings-shadow {
