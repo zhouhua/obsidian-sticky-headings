@@ -3,7 +3,7 @@ import type StickyHeaderComponent from './stickyHeader';
 
 export interface ISetting {
   max: number;
-  mode: 'default' | 'concise';
+  mode: 'default' | 'concise' | 'disable';
   theme: string;
   scrollBehaviour: ScrollBehavior;
   showIcon: boolean;

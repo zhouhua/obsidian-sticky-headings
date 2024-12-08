@@ -4,7 +4,6 @@
   export let heading: Heading | undefined;
   export let view: MarkdownView | undefined;
   export let file: TFile | undefined;
-  console.log(heading, file, view);
 </script>
 
 {#if heading && file && view}

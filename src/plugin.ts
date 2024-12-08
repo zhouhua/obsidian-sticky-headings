@@ -315,11 +315,9 @@ export default class StickyHeadingsPlugin extends Plugin {
         const cacheKey = heading.heading;
         let title: string;
         if (cacheKey in this.markdownCache) {
-          // console.log('skipping because its cached');
           title = this.markdownCache[cacheKey];
         } else {
           title = await parseMarkdown(heading.heading, this.app);
-          // console.log('adding to cache');
           this.markdownCache[cacheKey] = title;
         }
         return {

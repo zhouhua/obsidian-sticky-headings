@@ -32,6 +32,10 @@ type RootTranslation = {
 			 * C​o​n​c​i​s​e
 			 */
 			concise: string
+			/**
+			 * D​i​s​a​b​l​e
+			 */
+			disable: string
 		}
 		max: {
 			/**
@@ -113,6 +117,10 @@ export type TranslationFunctions = {
 			 * Concise
 			 */
 			concise: () => LocalizedString
+			/**
+			 * Disable
+			 */
+			disable: () => LocalizedString
 		}
 		max: {
 			/**

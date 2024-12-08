@@ -8,6 +8,7 @@ const en: BaseTranslation = {
         'By default, display the current heading, the parent heading, and the siblings of the parent heading. In concise mode, only display the current heading and the parent heading.',
       default: 'Default',
       concise: 'Concise',
+      disable: 'Disable',
     },
     max: {
       title: 'Display quantity limit',

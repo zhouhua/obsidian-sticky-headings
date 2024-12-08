@@ -37,6 +37,7 @@ export default class StickyHeadingsSetting extends PluginSettingTab {
       .addDropdown(dropdown => {
         dropdown.addOption('default', L.setting.mode.default());
         dropdown.addOption('concise', L.setting.mode.concise());
+        dropdown.addOption('disable', L.setting.mode.disable());
         dropdown.setValue(this.plugin.settings.mode);
         dropdown.onChange(value => {
           this.update({
@@ -44,8 +45,10 @@ export default class StickyHeadingsSetting extends PluginSettingTab {
 
             mode: value as 'default' | 'concise',
           });
+          this.display();
         });
       });
+    this.plugin.settings.mode !== 'disable' &&
     new Setting(containerEl)
       .setName(L.setting.max.title())
       .setDesc(L.setting.max.description())
@@ -72,6 +75,7 @@ export default class StickyHeadingsSetting extends PluginSettingTab {
           });
         });
       });
+    this.plugin.settings.mode !== 'disable' &&
     new Setting(containerEl).setName(L.setting.theme.title()).addDropdown(dropdown => {
       dropdown.addOption('flat', 'flat');
       dropdown.addOption('blur', 'blur');
@@ -85,6 +89,7 @@ export default class StickyHeadingsSetting extends PluginSettingTab {
         });
       });
     });
+    this.plugin.settings.mode !== 'disable' &&
     new Setting(containerEl)
       .setName(L.setting.indicators.title())
       .setDesc(L.setting.indicators.description())
@@ -97,6 +102,7 @@ export default class StickyHeadingsSetting extends PluginSettingTab {
           });
         });
       });
+    this.plugin.settings.mode !== 'disable' &&
     new Setting(containerEl)
       .setName(L.setting.autoShowFileName.title())
       .setDesc(L.setting.autoShowFileName.description())

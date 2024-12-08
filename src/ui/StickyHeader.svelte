@@ -65,50 +65,68 @@
   };
 </script>
 
-{#if (forceRenderingHeadings || headings).length > 0}
-  <div class={`sticky-headings-root sticky-headings-theme-${settings.theme}`} bind:this={main}>
+{#if settings.mode !== 'disable'}
+  {#if (forceRenderingHeadings || headings).length > 0}
+    <div class={`sticky-headings-root sticky-headings-theme-${settings.theme}`} bind:this={main}>
+      <div class="sticky-headings-container">
+        {#key forceRenderingHeadings || headings}
+          {#if showFileName && filename}
+            <div
+              class="sticky-headings-item"
+              on:click={() => scrollTo(0)}
+              role="button"
+              tabindex="0"
+              on:keydown={e => {
+                if (e.key === 'Enter') scrollTo(0);
+              }}
+            >
+              {#if settings.showIcon}
+                <div class="sticky-headings-icon">
+                  {@html getIcon('heading')?.outerHTML}
+                </div>
+              {/if}
+              {filename}
+            </div>
+          {/if}
+          {#each forceRenderingHeadings || headings as heading}
+            <div
+              class="sticky-headings-item"
+              data-indent-level={heading.indentLevel + (showFileName ? 1 : 0)}
+              on:click={() => handleScrollClick(heading)}
+              role="button"
+              tabindex="0"
+              on:keydown={e => {
+                if (e.key === 'Enter') handleScrollClick(heading);
+              }}
+            >
+              {#if settings.showIcon}
+                {#if editMode}
+                  {#each { length: heading.level } as _, i}
+                    #
+                  {/each}
+                {:else}
+                  <div class="sticky-headings-icon">
+                    {@html getIcon(`heading-${heading.level}`)?.outerHTML}
+                  </div>
+                {/if}
+              {/if}
+              {@html heading.title}
+            </div>
+          {/each}
+        {/key}
+      </div>
+    </div>
+  {/if}
+  <div class={`sticky-headings-root sticky-headings-shadow sticky-headings-theme-${settings.theme}`} bind:this={shadow}>
     <div class="sticky-headings-container">
-      {#key forceRenderingHeadings || headings}
+      {#key expectedHeadings}
         {#if showFileName && filename}
-          <div
-            class="sticky-headings-item"
-            on:click={() => scrollTo(0)}
-            role="button"
-            tabindex="0"
-            on:keydown={e => {
-              if (e.key === 'Enter') scrollTo(0);
-            }}
-          >
-            {#if settings.showIcon}
-              <div class="sticky-headings-icon">
-                {@html getIcon('heading')?.outerHTML}
-              </div>
-            {/if}
+          <div class="sticky-headings-item">
             {filename}
           </div>
         {/if}
-        {#each forceRenderingHeadings || headings as heading}
-          <div
-            class="sticky-headings-item"
-            data-indent-level={heading.indentLevel + (showFileName ? 1 : 0)}
-            on:click={() => handleScrollClick(heading)}
-            role="button"
-            tabindex="0"
-            on:keydown={e => {
-              if (e.key === 'Enter') handleScrollClick(heading);
-            }}
-          >
-            {#if settings.showIcon}
-              {#if editMode}
-                {#each { length: heading.level } as _, i}
-                  #
-                {/each}
-              {:else}
-                <div class="sticky-headings-icon">
-                  {@html getIcon(`heading-${heading.level}`)?.outerHTML}
-                </div>
-              {/if}
-            {/if}
+        {#each expectedHeadings as heading}
+          <div class="sticky-headings-item sticky-headings-shadow-item" data-indent-level={0}>
             {@html heading.title}
           </div>
         {/each}
@@ -116,22 +134,6 @@
     </div>
   </div>
 {/if}
-<div class={`sticky-headings-root sticky-headings-shadow sticky-headings-theme-${settings.theme}`} bind:this={shadow}>
-  <div class="sticky-headings-container">
-    {#key expectedHeadings}
-      {#if showFileName && filename}
-        <div class="sticky-headings-item">
-          {filename}
-        </div>
-      {/if}
-      {#each expectedHeadings as heading}
-        <div class="sticky-headings-item sticky-headings-shadow-item" data-indent-level={0}>
-          {@html heading.title}
-        </div>
-      {/each}
-    {/key}
-  </div>
-</div>
 
 <style>
   .sticky-headings-shadow {

@@ -7,6 +7,7 @@ const zh: Translation = {
       description: '默认情况下，显示当前标题、父标题和父标题的兄弟标题。简洁模式下，仅显示当前标题和父标题。',
       default: '默认',
       concise: '简洁',
+      disable: '禁用',
     },
     max: {
       title: '显示数量限制',
