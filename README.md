@@ -54,3 +54,10 @@ Supports both editing and reading modes, as well as multi-column layouts.
 * [vConsole](https://github.com/zhouhua/obsidian-vconsole)
 * [POWER MODE](https://github.com/zhouhua/obsidian-power-mode)
 * [PopKit](https://github.com/zhouhua/obsidian-popkit)
+
+## Change Log
+
+### 2.1.0
+
+* ✨ Added status bar mode support
+* 🎨 Improved heading rendering with HTML format support (such as LaTeX equations, bold text)
