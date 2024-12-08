@@ -1,18 +1,6 @@
-import type { App, FuzzyMatch, SearchMatchPart } from 'obsidian';
+import type { App, FuzzyMatch } from 'obsidian';
 import { FuzzySuggestModal, setIcon } from 'obsidian';
 import type { Heading } from 'src/types';
-
-function hightlight(text: string, matches: SearchMatchPart[]) {
-  if (!matches.length) return text;
-  let newString = '';
-  for (let i = 0; i < matches.length; i++) {
-    const [start, end] = matches[i];
-    newString += text.slice(i === 0 ? 0 : matches[i - 1][1], start);
-    newString += `<mark>${text.slice(start, end)}</mark>`;
-    newString += text.slice(end, i === matches.length - 1 ? text.length : matches[i + 1][0]);
-  }
-  return newString;
-}
 
 export class HeadingSuggester extends FuzzySuggestModal<Heading> {
   headings: Heading[];
@@ -35,7 +23,11 @@ export class HeadingSuggester extends FuzzySuggestModal<Heading> {
   }
 
   getItemText(item: Heading): string {
-    return item.title;
+    const div = createDiv();
+    div.innerHTML = item.title;
+    const text = div.textContent || '';
+    div.remove();
+    return text;
   }
 
   renderSuggestion(item: FuzzyMatch<Heading>, el: HTMLElement): void {
@@ -49,7 +41,7 @@ export class HeadingSuggester extends FuzzySuggestModal<Heading> {
     }
     setIcon(el, 'heading-' + item.item.level);
     const textEl = el.createEl('span');
-    textEl.innerHTML = hightlight(item.item.title, item.match.matches);
+    textEl.innerHTML = item.item.title;
   }
 
   onChooseItem(item: Heading): void {
