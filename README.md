@@ -51,7 +51,7 @@ Supports both editing and reading modes, as well as multi-column layouts.
 
 Here are some custom styles from the community. Thanks for the creative ideas and contributions!
 
-* ![Colorful and floating right](https://gist.github.com/Aiuanyu/8539a8425435406ea79cbc64eaea6082)
+* [Colorful and floating right](https://gist.github.com/Aiuanyu/8539a8425435406ea79cbc64eaea6082)
 * ...
 
 ## My Other Obsidian Plugins
