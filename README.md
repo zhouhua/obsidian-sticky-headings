@@ -64,7 +64,15 @@ Here are some custom styles from the community. Thanks for the creative ideas an
 
 ## Change Log
 
-### 2.1.0
+### [2.1.2](https://github.com/zhouhua/obsidian-sticky-headings/releases/tag/2.1.2)
+
+* Support for adjusting how far from the top boundary a heading needs to be to trigger the sticky effect.
+
+### [2.1.1](https://github.com/zhouhua/obsidian-sticky-headings/releases/tag/2.1.1)
+
+* To support displaying only the status bar mode (the simplest UI), the sticky headings can be set to disable in order to hide it.
+
+### [2.1.0](https://github.com/zhouhua/obsidian-sticky-headings/releases/tag/2.1.0)
 
 * ✨ Added status bar mode support
 * 🎨 Improved heading rendering with HTML format support (such as LaTeX equations, bold text)
