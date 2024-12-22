@@ -12,6 +12,7 @@ export const defaultSettings = {
   showIcon: true,
   autoShowFileName: true,
   showInStatusBar: false,
+  boundaryOffset: '0px',
 } satisfies ISetting;
 
 export default class StickyHeadingsSetting extends PluginSettingTab {
@@ -124,5 +125,21 @@ export default class StickyHeadingsSetting extends PluginSettingTab {
         });
       });
     });
+    this.plugin.settings.mode !== 'disable' &&
+    new Setting(containerEl)
+      .setName(L.setting.boundaryOffset.title())
+      .setDesc(L.setting.boundaryOffset.description())
+      .addText(text => {
+        text.setValue(this.plugin.settings.boundaryOffset);
+        text.onChange(value => {
+          const isValid = /^-?\d+(%|px)$/.test(value);
+          if (isValid) {
+            this.update({
+              ...this.plugin.settings,
+              boundaryOffset: value,
+            });
+          }
+        });
+      });
   }
 }

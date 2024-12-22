@@ -311,7 +311,7 @@ export default class StickyHeadingsPlugin extends Plugin {
     if (!headings || headings.length === 0) return [];
 
     return await Promise.all(
-      getShownHeadings(headings, view).map(async heading => {
+      getShownHeadings(headings, view, this.settings).map(async heading => {
         const cacheKey = heading.heading;
         let title: string;
         if (cacheKey in this.markdownCache) {

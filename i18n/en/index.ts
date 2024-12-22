@@ -33,6 +33,11 @@ const en: BaseTranslation = {
         'When enabled, if the first heading in the note is not the unique highest-level title, an additional title with the filename as the highest-level title will be added to achieve a better document outline.',
     },
     showInStatusBar: 'Show in status bar',
+    boundaryOffset: {
+      title: 'Trigger offset',
+      description:
+        'Distance from the top boundary of the note display area where headings will start to stick (in pixels or %)',
+    },
   },
 };
 

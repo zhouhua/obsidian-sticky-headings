@@ -95,6 +95,16 @@ type RootTranslation = {
 		 * S​h​o​w​ ​i​n​ ​s​t​a​t​u​s​ ​b​a​r
 		 */
 		showInStatusBar: string
+		boundaryOffset: {
+			/**
+			 * T​r​i​g​g​e​r​ ​o​f​f​s​e​t
+			 */
+			title: string
+			/**
+			 * D​i​s​t​a​n​c​e​ ​f​r​o​m​ ​t​h​e​ ​t​o​p​ ​b​o​u​n​d​a​r​y​ ​o​f​ ​t​h​e​ ​n​o​t​e​ ​d​i​s​p​l​a​y​ ​a​r​e​a​ ​w​h​e​r​e​ ​h​e​a​d​i​n​g​s​ ​w​i​l​l​ ​s​t​a​r​t​ ​t​o​ ​s​t​i​c​k​ ​(​i​n​ ​p​i​x​e​l​s​ ​o​r​ ​%​)
+			 */
+			description: string
+		}
 	}
 }
 
@@ -180,6 +190,16 @@ export type TranslationFunctions = {
 		 * Show in status bar
 		 */
 		showInStatusBar: () => LocalizedString
+		boundaryOffset: {
+			/**
+			 * Trigger offset
+			 */
+			title: () => LocalizedString
+			/**
+			 * Distance from the top boundary of the note display area where headings will start to stick (in pixels or %)
+			 */
+			description: () => LocalizedString
+		}
 	}
 }
 

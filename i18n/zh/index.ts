@@ -32,6 +32,10 @@ const zh: Translation = {
         '开启后，如果笔记的第一个标题不是唯一最高级标题，则会额外添加一个以文件名为标题的最高级标题，以达到更好的文档大纲效果。',
     },
     showInStatusBar: '在状态栏显示',
+    boundaryOffset: {
+      title: '触发偏移',
+      description: '距离文档显示区域顶部多远时，标题开始粘滞。支持 px 和 % 两种单位。',
+    },
   },
 };
 

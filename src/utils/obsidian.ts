@@ -1,5 +1,6 @@
 import type { App, TAbstractFile } from 'obsidian';
 import { TFile, MarkdownView, MarkdownRenderer } from 'obsidian';
+import type { ISetting } from 'src/types';
 
 export function isMarkdownFile(file: TFile | TAbstractFile) {
   if (!(file instanceof TFile)) {
@@ -50,4 +51,13 @@ export function needShowFileName(file: TFile, app: App): boolean {
     }
   }
   return false;
+}
+
+export function getBoundaryOffset(view: MarkdownView, settings: ISetting) {
+  const { boundaryOffset } = settings;
+  if (boundaryOffset.endsWith('%')) {
+    const percentage = parseFloat(boundaryOffset);
+    return (getScroller(view).clientHeight * percentage) / 100 || 0;
+  }
+  return parseFloat(boundaryOffset) || 0;
 }
