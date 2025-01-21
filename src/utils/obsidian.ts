@@ -23,7 +23,6 @@ export function parseMarkdown(markdown: string, app: App): Promise<string> {
   }
 
   return MarkdownRenderer.render(app, '# ' + markdown, div, '', activeView).then(() => {
-    console.log(div.innerHTML);
     return div.querySelector('h1')?.innerHTML || '';
   });
 }
