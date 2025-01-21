@@ -64,6 +64,10 @@ Here are some custom styles from the community. Thanks for the creative ideas an
 
 ## Change Log
 
+### [2.1.3](https://github.com/zhouhua/obsidian-sticky-headings/releases/tag/2.1.3)
+
+* Fix [#40](https://github.com/zhouhua/obsidian-sticky-headings/issues/40).
+
 ### [2.1.2](https://github.com/zhouhua/obsidian-sticky-headings/releases/tag/2.1.2)
 
 * Support for adjusting how far from the top boundary a heading needs to be to trigger the sticky effect.
