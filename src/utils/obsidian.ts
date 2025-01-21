@@ -22,8 +22,9 @@ export function parseMarkdown(markdown: string, app: App): Promise<string> {
     return Promise.resolve(markdown); // Return the original markdown if rendering is not possible
   }
 
-  return MarkdownRenderer.render(app, markdown, div, '', activeView).then(() => {
-    return div.innerHTML;
+  return MarkdownRenderer.render(app, '# ' + markdown, div, '', activeView).then(() => {
+    console.log(div.innerHTML);
+    return div.querySelector('h1')?.innerHTML || '';
   });
 }
 
